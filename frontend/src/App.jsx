@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import ArchivePage from './pages/ArchivePage';
+import FavoritesPage from './pages/FavoritesPage';
 import Navbar from './components/Navbar';
 
 const App = () => {
@@ -22,6 +24,8 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/archive/:year/:month" element={<ArchivePage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
       </Routes>
     </div>
   );
