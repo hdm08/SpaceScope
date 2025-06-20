@@ -64,10 +64,10 @@ const ArchivePage = () => {
           type="month"
           onChange={handleMonthChange}
           value={`${year}-${month.padStart(2, '0')}`}
-          className="p-2 border rounded bg-transparent"
+          className="p-2 border rounded bg-transparent text-white"
         />
       </div>
-  
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {[...apods]  // Create a shallow copy to avoid mutating state
@@ -124,7 +124,6 @@ const ArchivePage = () => {
                 />
               </div>
             )}
-
 
             <Toaster position="top-right" />
 
