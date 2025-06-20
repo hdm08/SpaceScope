@@ -33,6 +33,9 @@ const Navbar = () => {
             <li>
               <Link to="/search" className="hover:underline">Search</Link>
             </li>
+            <li>
+              <Link to="/neo" className="hover:underline">Neo</Link>
+            </li>
           </ul>
         </div>
 
