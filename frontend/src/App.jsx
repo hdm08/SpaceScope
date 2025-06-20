@@ -6,6 +6,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import Navbar from './components/Navbar';
 import WeatherDashboard from './pages/WeatherDashboard';
 import Search from './pages/Search';
+import NeoApp from './pages/Neo/Neo';
 
 const App = () => {
   const today = new Date();
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/mars_weather" element={<WeatherDashboard />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/neo" element={<NeoApp />} />
 
       </Routes>
     </div>
