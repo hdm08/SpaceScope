@@ -27,6 +27,12 @@ const Navbar = () => {
             <li>
               <Link to="/favorites" className="hover:underline">Favorites</Link>
             </li>
+            <li>
+              <Link to="/mars_weather" className="hover:underline">Mars</Link>
+            </li>
+            <li>
+              <Link to="/search" className="hover:underline">Search</Link>
+            </li>
           </ul>
         </div>
 

@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage';
 import ArchivePage from './pages/ArchivePage';
 import FavoritesPage from './pages/FavoritesPage';
 import Navbar from './components/Navbar';
+import WeatherDashboard from './pages/WeatherDashboard';
+import Search from './pages/Search';
 
 const App = () => {
   const today = new Date();
@@ -26,6 +28,9 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/archive/:year/:month" element={<ArchivePage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/mars_weather" element={<WeatherDashboard />} />
+        <Route path="/search" element={<Search />} />
+
       </Routes>
     </div>
   );
