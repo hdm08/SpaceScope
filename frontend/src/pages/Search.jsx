@@ -62,7 +62,7 @@ const Search = () => {
         const preview = links.find(link => link.rel === 'preview' || link.rel === 'alternate');
         console.log('1Item Links:', preview.href);
         if (preview?.href) return preview.href;
-        
+
 
         // Sometimes `href` has ".mp4" or ".mp3"
         const mediaLink = links.find(link =>
@@ -92,112 +92,123 @@ const Search = () => {
                     </div>
 
                 </form>
-
-                {/* Filters */}
-                {/* <div className="flex flex-col md:flex-row gap-4"> */}
-                <div className="flex justify-center mt-4">
-                    <div className="inline-flex gap-4 justify-center rounded-full bg-transparent p-1">
-                        {['', 'image', 'video', 'audio'].map((type) => (
-                            <button
-                                key={type}
-                                onClick={() => setMediaType(type)}
-                                className={`px-4 py-2 rounded-full transition-all duration-300 ${mediaType === type
-                                    ? 'bg-white text-black'
-                                    : 'bg-transparent text-white hover:bg-blue-100'
-                                    }`}
-                            >
-                                {type === '' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-center w-full">
-                    <label className="mb-2 text-center">
-                        Year Range: {yearRange[0]} - {yearRange[1]}
-                    </label>
-                    <div className="w-full max-w-md flex justify-center">
-                        <Range
-                            step={1}
-                            min={MIN}
-                            max={MAX}
-                            values={yearRange}
-                            onChange={(values) => setYearRange(values)}
-                            renderTrack={({ props, children }) => (
-                                <div
-                                    {...props}
-                                    className="h-2 bg-gray-300 rounded w-full"
-                                    style={{ ...props.style }}
-                                >
-                                    {children}
-                                </div>
-                            )}
-                            renderThumb={({ props }) => (
-                                <div
-                                    {...props}
-                                    className="w-5 h-5 rounded-full bg-blue-500 shadow"
-                                />
-                            )}
-                        />
-                    </div>
-                </div>
-
             </div>
-            {/* </div> */}
 
-            {/* Error Message */}
-            {error && <ErrorMessage message={error} />}
+            {query.trim() && (
+                <>
+                    <div className="mb-8">
 
-            {/* Results Grid or Loading Spinner */}
-            {loading ? (
-                <LoadingSpinner />
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {results.map((item, index) => (
-                        <div
-                        key={index}
-                        className="relative group cursor-pointer"
-                        onClick={() => setSelectedItem(item)}
-                    >
-                        {/* Preview Image */}
-                        <img
-                            src={getPreviewUrl(item)}
-                            alt={item.data[0]?.title || 'NASA Media'}
-                            className="w-full h-48 object-cover rounded"
-                        />
-                    
-                        {/* Video Icon Overlay */}
-                        {item.data[0]?.media_type === 'video' && (
-                            <div className="absolute top-2 right-2 bg-black bg-opacity-60 p-1 rounded-full">
-                                <Video className="text-white w-6 h-6" />
-                            </div>
+                        {results.length > 0 && (
+                            <>
+                                {/* Media Type Buttons */}
+                                <div className="flex justify-center mt-4">
+                                    <div className="inline-flex gap-4 justify-center rounded-full bg-transparent p-1">
+                                        {['', 'image', 'video', 'audio'].map((type) => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setMediaType(type)}
+                                                className={`px-4 py-2 rounded-full transition-all duration-300 ${mediaType === type
+                                                    ? 'bg-white text-black'
+                                                    : 'bg-transparent text-white hover:bg-blue-100'
+                                                    }`}
+                                            >
+                                                {type === '' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Year Range Slider */}
+                                <div className="flex flex-col items-center w-full mt-4">
+                                    <label className="mb-2 text-center">
+                                        Year Range: {yearRange[0]} - {yearRange[1]}
+                                    </label>
+                                    <div className="w-full max-w-md flex justify-center">
+                                        <Range
+                                            step={1}
+                                            min={MIN}
+                                            max={MAX}
+                                            values={yearRange}
+                                            onChange={(values) => setYearRange(values)}
+                                            renderTrack={({ props, children }) => (
+                                                <div
+                                                    {...props}
+                                                    className="h-2 bg-gray-300 rounded w-full"
+                                                    style={{ ...props.style }}
+                                                >
+                                                    {children}
+                                                </div>
+                                            )}
+                                            renderThumb={({ props }) => (
+                                                <div
+                                                    {...props}
+                                                    className="w-5 h-5 rounded-full bg-blue-500 shadow"
+                                                />
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                            </>
                         )}
-                    
-                        {/* Hover Details */}
-                        <div className="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white p-4 rounded">
-                            <div>
-                                <h3 className="text-lg font-bold">{item.data[0]?.title}</h3>
-                                <p>{new Date(item.data[0]?.date_created).toLocaleDateString()}</p>
-                                <p>{item.data[0]?.description?.substring(0, 100)}...</p>
-                            </div>
-                        </div>
+
                     </div>
-                    ))}
-                </div>
+                    {/* </div> */}
+
+                    {/* Error Message */}
+                    {error && <ErrorMessage message={error} />}
+
+                    {/* Results Grid or Loading Spinner */}
+                    {loading ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {results.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="relative group cursor-pointer"
+                                    onClick={() => setSelectedItem(item)}
+                                >
+                                    {/* Preview Image */}
+                                    <img
+                                        src={getPreviewUrl(item)}
+                                        alt={item.data[0]?.title || 'NASA Media'}
+                                        className="w-full h-48 object-cover rounded"
+                                    />
+
+                                    {/* Video Icon Overlay */}
+                                    {item.data[0]?.media_type === 'video' && (
+                                        <div className="absolute top-2 right-2 bg-black bg-opacity-60 p-1 rounded-full">
+                                            <Video className="text-white w-6 h-6" />
+                                        </div>
+                                    )}
+
+                                    {/* Hover Details */}
+                                    <div className="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white p-4 rounded">
+                                        <div>
+                                            <h3 className="text-lg font-bold">{item.data[0]?.title}</h3>
+                                            <p>{new Date(item.data[0]?.date_created).toLocaleDateString()}</p>
+                                            <p>{item.data[0]?.description?.substring(0, 100)}...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
 
             {/* Detailed View Modal */}
             {selectedItem && (
                 <Modal onClose={() => setSelectedItem(null)}>
-          <div className="max-w-3xl max-h-[80vh] overflow-y-auto p-6 bg-black bg-opacity-80 text-white rounded shadow-lg relative">
-                {/* Close Button */}
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="absolute top-3 right-3 text-white hover:text-white-300 text-2xl font-bold"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
+                    <div className="max-w-3xl max-h-[80vh] overflow-y-auto p-6 bg-black bg-opacity-80 text-white rounded shadow-lg relative">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setSelectedItem(null)}
+                            className="absolute top-3 right-3 text-white hover:text-white-300 text-2xl font-bold"
+                            aria-label="Close modal"
+                        >
+                            &times;
+                        </button>
                         <h2 className="text-2xl font-bold mb-2">{selectedItem.data[0]?.title}</h2>
                         {selectedItem.data[0]?.media_type === 'image' && (
                             <img
