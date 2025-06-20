@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+input[type="month"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
