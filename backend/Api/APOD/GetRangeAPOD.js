@@ -20,5 +20,4 @@ const GetRangeAPOD = async(req, res) => {
     
 
 }
-
 module.exports = GetRangeAPOD;
