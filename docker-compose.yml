@@ -17,7 +17,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:80"   # map container port 80 (nginx) to 5173 on host (Vite default port)
+      - "5173:5173"   # map container port 80 (nginx) to 5173 on host (Vite default port)
     depends_on:
       - backend
     volumes:
