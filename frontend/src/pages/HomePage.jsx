@@ -2,21 +2,39 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Toaster } from 'react-hot-toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import Button from '../components/Button';
+import { useCache } from '../components/CacheProvider';
 
 const HomePage = () => {
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { getCache, setCache, isCacheValid } = useCache();
 
   useEffect(() => {
     const fetchAPOD = async () => {
+      // Use current date as cache key (e.g., apod:2025-06-24)
+      const today = new Date().toISOString().split('T')[0];
+      const cacheKey = `apod:${today}`;
+
+      // Check cache
+      if (isCacheValid(cacheKey)) {
+        const cachedData = getCache(cacheKey);
+        if (cachedData) {
+          setApod(cachedData.data);
+          setLoading(false);
+          return;
+        }
+      }
+
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:4000/api/apod');
-        setApod(response.data);
+        const data = response.data;
+        setApod(data);
+        setCache(cacheKey, data); // Cache the response
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch APOD. Please try again later.');
@@ -25,7 +43,7 @@ const HomePage = () => {
       }
     };
     fetchAPOD();
-  }, []);
+  }, [getCache, setCache, isCacheValid]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
@@ -37,12 +55,11 @@ const HomePage = () => {
       transition={{ duration: 0.5 }}
       className="container mx-auto p-4"
     >
-      <h1 className='text-2xl text-center font-bold '>Astronomy Picture of the Day</h1>
+      <h1 className="text-2xl text-center font-bold">Astronomy Picture of the Day</h1>
       <p className="text-2xl font-bold text-white text-center mb-4">{apod.date}</p>
       <br />
-      <Toaster position="top-right" />
       <div className="max-w-6xl mx-auto mt-6 flex flex-col md:flex-row gap-6">
-        {/* Left side: Image or video */}
+        {/* Left Side: Image section */}
         <div className="flex-shrink-0">
           {apod.media_type === 'image' ? (
             <img
@@ -62,58 +79,17 @@ const HomePage = () => {
 
         {/* Right side: Text content */}
         <div className="flex-grow text-white">
-          <h1 className="text-xl font-bold mb-2">{apod.title}</h1><br />
-
+          <h1 className="text-xl font-bold mb-2">{apod.title}</h1>
+          <br />
           <p className="text-justify">{apod.explanation}</p>
           {apod.copyright && (
-            <p className="mt-4 text-sm text-gray-400 italic">
-              © {apod.copyright}
-            </p>
+            <p className="mt-4 text-sm text-gray-400 italic">© {apod.copyright}</p>
           )}
-          <div className="mt-4 flex justify-center space-x-4">
-            <button
-              onClick={() => {
-                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-                if (!favorites.some((fav) => fav.date === apod.date)) {
-                  favorites.push(apod);
-                  localStorage.setItem('favorites', JSON.stringify(favorites));
-                  toast.success('Added to favorites!');
-                } else {
-                  toast.error('Already in favorites');
-                }
-              }}
-              className="bg-black text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
-            >
-              Add to Favorites
-            </button>
-
-            <button
-              onClick={() => {
-                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(apod.title)}&url=${encodeURIComponent(apod.url)}`;
-                window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-              }}
-              className="bg-black text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
-            >
-              Share on Twitter
-            </button>
-
-            <button
-              onClick={() => {
-                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(apod.url)}`;
-                window.open(facebookUrl, '_blank', 'noopener,noreferrer');
-              }}
-              className="bg-black text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
-            >
-              Share on Facebook
-            </button>
-          </div>
-
-        
+          <Button apod={apod} page="Home" />
+        </div>
       </div>
-    </div>
-    </motion.div >
+    </motion.div>
   );
 };
 
 export default HomePage;
-

@@ -50,7 +50,7 @@ const AsteroidExplorerDashboard = () => {
   }, [page]);
 
   return (
-    <div className="max-w-6xl mx-auto bg-black bg-opaque-50 p-6 rounded-lg shadow-md">
+    <div className="max-w-6xl mx-auto bg-black bg-opacity-50 p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Asteroid Explorer Dashboard</h2>
 
       <div className="mb-4">
@@ -59,7 +59,7 @@ const AsteroidExplorerDashboard = () => {
             placeholder="Search asteroid by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-1/3 px-4 py-2 border border-white bg-black text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-72 p-2 rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       {error && <ErrorMessage message={error} />}
