@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"   # map container port 80 (nginx) to 5173 on host (Vite default port)
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
