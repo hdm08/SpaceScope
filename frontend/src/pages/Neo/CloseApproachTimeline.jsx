@@ -11,14 +11,16 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { Chart } from 'react-chartjs-2';
-import { color } from 'framer-motion';
-
+import DateForm from '../../components/DateForm';
 // Register necessary Chart.js components
 ChartJS.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
-
+const today = new Date().toISOString().slice(0, 10);
+const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .slice(0, 10);
 const CloseApproachTimeline = () => {
-  const [startDate, setStartDate] = useState('2025-06-01');
-  const [endDate, setEndDate] = useState('2025-06-07');
+  const [startDate, setStartDate] = useState(sevenDaysAgo);
+  const [endDate, setEndDate] = useState(today);
   const [asteroids, setAsteroids] = useState([]);
   const [hazardousCount, setHazardousCount] = useState(0);
   const [nonHazardousCount, setNonHazardousCount] = useState(0);
@@ -30,23 +32,23 @@ const CloseApproachTimeline = () => {
     const start = dayjs(startDate);
     const end = dayjs(endDate);
     const diff = end.diff(start, 'day');
-  
+
     if (diff < 0) {
       setError('End date must be after start date.');
       return;
     }
-  
-    if (diff > 6) {
+
+    if (diff > 7) {
       setError('Please select a date range within 7 days.');
       return;
     }
-  
+
     setLoading(true);
     try {
       const response = await axios.get("http://localhost:4000/api/neo/feed/", {
         params: { SD: startDate, ED: endDate }
       });
-  
+
       const nearEarthObjects = response.data.near_earth_objects;
       const asteroidList = Object.keys(nearEarthObjects).flatMap(date =>
         nearEarthObjects[date].map(asteroid => ({
@@ -67,7 +69,7 @@ const CloseApproachTimeline = () => {
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     fetchAsteroids();
@@ -102,50 +104,30 @@ const CloseApproachTimeline = () => {
 
   const chartOptions = {
     scales: {
-      x: { type: 'time', time: { unit: 'day' }, title: { display: true, text: 'Date', color: 'white'}, ticks: {color: 'white'},grid: {color: '#444' } },
-      y: { title: { display: true, text: 'Asteroid Count', color: 'white' }, beginAtZero: true, ticks: {color: 'white'},grid: {color: '#444' } },
-    },plugins: {
-        legend: {
-          labels: {
-            color: 'white', // ← Legend label color
-          },
+      x: { type: 'time', time: { unit: 'day' }, title: { display: true, text: 'Date', color: 'white' }, ticks: { color: 'white' }, grid: { color: '#444' } },
+      y: { title: { display: true, text: 'Asteroid Count', color: 'white' }, beginAtZero: true, ticks: { color: 'white' }, grid: { color: '#444' } },
+    }, plugins: {
+      legend: {
+        labels: {
+          color: 'white', // ← Legend label color
         },
-      
+      },
+
 
     },
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-black bg-opacity-50 text-white  p-6 rounded-lg shadow-md">
+    <div className="max-w-4xl mx-auto bg-black bg-opacity-50 text-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Close Approach Timeline</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm font-medium text-white">Start Date</label>
-          
-          <input
-            type="date"
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
-            className="mt-1 block w-full border-white  bg-transparent text-white rounded-md shadow-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            className="mt-1 block w-full border-white  bg-transparent text-white rounded-md shadow-sm"
-          />
-        </div>
-      </div>
-      <button
-        onClick={fetchAsteroids}
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
-        disabled={loading}
-      >
-        {loading ? 'Loading...' : 'Fetch Asteroids'}
-      </button>
+      <DateForm
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        fetchAsteroids={fetchAsteroids}
+        loading={loading}
+      />
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       <div className="mt-6">
         <p><strong>Hazardous:</strong> {hazardousCount} | <strong>Non-Hazardous:</strong> {nonHazardousCount}</p>

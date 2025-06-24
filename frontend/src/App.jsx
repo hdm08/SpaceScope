@@ -7,7 +7,9 @@ import Navbar from './components/Navbar';
 import WeatherDashboard from './pages/WeatherDashboard';
 import Search from './pages/Search';
 import NeoApp from './pages/Neo/Neo';
-
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import PrivateRoute from './components/PrivateRoute';
 const App = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -28,11 +30,18 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/archive/:year/:month" element={<ArchivePage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
+
+        <Route path="/favorites" element={
+          <PrivateRoute>
+          <FavoritesPage />
+        </PrivateRoute>
+        } />
+
         <Route path="/mars_weather" element={<WeatherDashboard />} />
         <Route path="/search" element={<Search />} />
         <Route path="/neo" element={<NeoApp />} />
-
+        <Route path="/login" element={<Login/>} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </div>
   );

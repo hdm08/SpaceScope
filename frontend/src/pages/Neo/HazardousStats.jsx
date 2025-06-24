@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import DateForm from '../../components/DateForm';
 
 // Register necessary components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -41,8 +42,8 @@ const HazardousStats = () => {
     try {
       const response = await axios.get('http://localhost:4000/api/neo/feed', {
         params: {
-          start_date: startDate,
-          end_date: endDate,
+          SD: startDate,
+          ED: endDate,
         },
       });
 
@@ -57,11 +58,11 @@ const HazardousStats = () => {
   };
 
   // No automatic fetch on date change now
-  // useEffect(() => {
-  //   if (startDate && endDate) {
-  //     fetchAsteroids();
-  //   }
-  // }, [startDate, endDate]);
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAsteroids();
+    }
+  }, [startDate, endDate]);
 
   const chartData = {
     labels: ['Hazardous', 'Non-Hazardous'],
@@ -83,40 +84,17 @@ const HazardousStats = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-black text-white p-6 rounded-lg shadow-md">
+    <div className="max-w-4xl mx-auto bg-black bg-opacity-50 text-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Hazardous vs Non-Hazardous Stats</h2>
-
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div>
-          <label className="block mb-1">Start Date</label>
-          <input
-            type="date"
-            className="px-4 py-2 rounded-md border border-gray-500 bg-black text-white"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block mb-1">End Date</label>
-          <input
-            type="date"
-            className="px-4 py-2 rounded-md border border-gray-500 bg-black text-white"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <button
-        className="px-6 py-2 bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-        onClick={fetchAsteroids}
-        disabled={loading}
-      >
-        {loading ? 'Loading...' : 'Fetch Data'}
-      </button>
-
+      <DateForm
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        fetchAsteroids={fetchAsteroids}
+        loading={loading}
+      />
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-
       {!loading && asteroids.length > 0 && (
         <div className="mt-6">
           <Chart type="pie" data={chartData} options={chartOptions} />

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Masonry from 'react-masonry-css';
 import { motion } from 'framer-motion';
 import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
-import { Toaster } from 'react-hot-toast';
 const FavoritesPage = () => {
     const [favorites, setFavorites] = useState([]);
     const [selectedApod, setSelectedApod] = useState(null);
@@ -19,14 +17,11 @@ const FavoritesPage = () => {
         toast.success('Removed from Favorites ');
         localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
     };
-
     return (
-
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold text-center mb-4">Favorite APODs</h1>
             {favorites.length === 0 && <p className="text-center">No favorites yet!</p>}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Toaster position="top-right" />
                 {favorites.map((apod) => (
                     <motion.div
                         key={apod.date}
@@ -52,36 +47,33 @@ const FavoritesPage = () => {
                 ))}
             </div>
             {selectedApod && (
-                <Modal onClose={() => setSelectedApod(null)}>
-                    <div className="max-w-3xl max-h-[80vh] overflow-y-auto p-6 bg-black bg-opacity-80 text-white rounded shadow-lg relative">
-                        <button
-                            onClick={() => setSelectedApod(null)}
-                            className="absolute top-3 right-3 text-white hover:text-white text-2xl font-bold"
-                            aria-label="Close modal"
-                        >
-                            &times;
-                        </button>
-                        <h2 className="text-2xl font-bold mb-4">{selectedApod.title}</h2>
-                        {selectedApod.media_type === 'image' ? (
-                            <div className="flex justify-center">
-                                <img
-                                    src={selectedApod.hdurl || selectedApod.url}
-                                    alt={selectedApod.title}
-                                    className="w-[300px] h-[300px] rounded"
-                                />
-                            </div>
-                        ) : (
-                            <div className="flex justify-center">
-                                <iframe
-                                    src={selectedApod.url}
-                                    title={selectedApod.title}
-                                    className="w-[50px] h-[50px] rounded"
-                                    allowFullScreen
-                                />
-                            </div>
-                        )}
-                        <p className="mt-4 text-justify">{selectedApod.explanation}</p>
-                    </div>
+                <Modal
+                    onClose={() => setSelectedApod(null)}
+                    item={selectedApod}
+                    page="Favorites"
+                    favorites={favorites}
+                    setFavorites={setFavorites}
+                >
+                    <h2 className="text-2xl font-bold mb-4">{selectedApod.title}</h2>
+                    {selectedApod.media_type === 'image' ? (
+                        <div className="flex justify-center">
+                            <img
+                                src={selectedApod.hdurl || selectedApod.url}
+                                alt={selectedApod.title}
+                                className="w-[300px] h-[300px] rounded"
+                            />
+                        </div>
+                    ) : (
+                        <div className="flex justify-center">
+                            <iframe
+                                src={selectedApod.url}
+                                title={selectedApod.title}
+                                className="w-[50px] h-[50px] rounded"
+                                allowFullScreen
+                            />
+                        </div>
+                    )}
+                    <p className="mt-4 text-justify">{selectedApod.explanation}</p>
                 </Modal>
             )}
         </div>
