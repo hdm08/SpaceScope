@@ -21,6 +21,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.18.1",
     "init": "^0.1.2",

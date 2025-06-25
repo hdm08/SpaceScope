@@ -8,58 +8,95 @@ import {
   Legend
 } from 'chart.js';
 import { Bubble } from 'react-chartjs-2';
-import 'chart.js/auto'; // ensures all required chart types are registered
+import 'chart.js/auto'; // Ensures all required chart types are registered
 import DateForm from '../../components/DateForm';
 import dayjs from 'dayjs';
+import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
 
 // Register chart components
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
+const today = new Date().toISOString().slice(0, 10);
+const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  .toISOString()
+  .slice(0, 10);
+
 const SizeVsDistancePlot = () => {
-  const today = new Date().toISOString().slice(0, 10);
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10);
   const [startDate, setStartDate] = useState(sevenDaysAgo);
   const [endDate, setEndDate] = useState(today);
   const [asteroids, setAsteroids] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const { getCache, setCache, isCacheValid } = useCache(); // Access cache functions
+
   const fetchAsteroids = async () => {
     setLoading(true);
-    setError(null); 
+    setError(null);
     const start = dayjs(startDate);
     const end = dayjs(endDate);
     const diff = end.diff(start, 'day');
 
     if (diff < 0) {
       setError('End date must be after start date.');
+      setLoading(false);
       return;
     }
     if (diff > 7) {
       setError('Please select a date range within 7 days.');
+      setLoading(false);
       return;
     }
 
-    try {
-      const response = await axios.get(`http://localhost:4000/api/neo/feed?start_date=${startDate}&end_date=${endDate}`);
-      const nearEarthObjects = response.data.near_earth_objects;
-      const asteroidList = Object.keys(nearEarthObjects).flatMap(date =>
-        nearEarthObjects[date].map(asteroid => ({
+    const cacheKey = `asteroids_size_distance_${startDate}_${endDate}`; // Unique cache key
+    const cachedData = getCache(cacheKey);
+
+    // Validate cached data
+    if (isCacheValid(cacheKey) && cachedData && cachedData.near_earth_objects) {
+      const asteroidList = Object.keys(cachedData.near_earth_objects).flatMap(date =>
+        cachedData.near_earth_objects[date].map(asteroid => ({
           id: asteroid.id,
           name: asteroid.name,
           missDistance: parseFloat(asteroid.close_approach_data[0]?.miss_distance.astronomical),
           diameter: (
-            asteroid.estimated_diameter.kilometers.estimated_diameter_min +
-            asteroid.estimated_diameter.kilometers.estimated_diameter_max
+            asteroid.estimated_diameter?.kilometers?.estimated_diameter_min +
+            asteroid.estimated_diameter?.kilometers?.estimated_diameter_max
           ) / 2,
           velocity: parseFloat(asteroid.close_approach_data[0]?.relative_velocity.kilometers_per_second),
           hazardous: asteroid.is_potentially_hazardous_asteroid,
         }))
       );
       setAsteroids(asteroidList);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:4000/api/neo/feed?start_date=${startDate}&end_date=${endDate}`);
+      const data = response.data;
+      // Validate API response
+      if (data && data.near_earth_objects) {
+        setCache(cacheKey, data, 300000); // 5-minute TTL
+        const asteroidList = Object.keys(data.near_earth_objects).flatMap(date =>
+          data.near_earth_objects[date].map(asteroid => ({
+            id: asteroid.id,
+            name: asteroid.name,
+            missDistance: parseFloat(asteroid.close_approach_data[0]?.miss_distance.astronomical),
+            diameter: (
+              asteroid.estimated_diameter?.kilometers?.estimated_diameter_min +
+              asteroid.estimated_diameter?.kilometers?.estimated_diameter_max
+            ) / 2,
+            velocity: parseFloat(asteroid.close_approach_data[0]?.relative_velocity.kilometers_per_second),
+            hazardous: asteroid.is_potentially_hazardous_asteroid,
+          }))
+        );
+        setAsteroids(asteroidList);
+      } else {
+        setAsteroids([]);
+        setError('Invalid data format received from API.');
+      }
     } catch (err) {
+      setAsteroids([]); // Fallback to empty array on error
       setError('Failed to fetch asteroid data');
     } finally {
       setLoading(false);
@@ -68,7 +105,7 @@ const SizeVsDistancePlot = () => {
 
   useEffect(() => {
     fetchAsteroids();
-  }, []);
+  }, [startDate, endDate]); // Trigger fetch when dates change
 
   const chartData = {
     datasets: [
@@ -77,7 +114,7 @@ const SizeVsDistancePlot = () => {
         data: asteroids.map(asteroid => ({
           x: asteroid.missDistance,
           y: asteroid.diameter,
-          r: asteroid.velocity / 2,
+          r: asteroid.velocity ? asteroid.velocity / 2 : 5, // Fallback radius if velocity is undefined
           asteroid,
         })),
         backgroundColor: asteroids.map(asteroid =>
@@ -90,12 +127,14 @@ const SizeVsDistancePlot = () => {
   const chartOptions = {
     scales: {
       x: {
-        title: { display: true, text: 'Miss Distance (AU)', color:'white'},
-        ticks: {color: 'white'},grid: {color: '#444' }
+        title: { display: true, text: 'Miss Distance (AU)', color: 'white' },
+        ticks: { color: 'white' },
+        grid: { color: '#444' },
       },
       y: {
-        title: { display: true, text: 'Estimated Diameter (km)', color:'white' },
-        ticks: {color: 'white'},grid: {color: '#444' },
+        title: { display: true, text: 'Estimated Diameter (km)', color: 'white' },
+        ticks: { color: 'white' },
+        grid: { color: '#444' },
         beginAtZero: true,
       },
     },
@@ -104,16 +143,16 @@ const SizeVsDistancePlot = () => {
         callbacks: {
           label: context => [
             `Name: ${context.raw.asteroid.name}`,
-            `Miss Distance: ${context.raw.asteroid.missDistance.toFixed(4)} AU`,
-            `Diameter: ${context.raw.asteroid.diameter.toFixed(2)} km`,
-            `Velocity: ${context.raw.asteroid.velocity.toFixed(2)} km/s`,
+            `Miss Distance: ${context.raw.asteroid.missDistance?.toFixed(4)} AU`,
+            `Diameter: ${context.raw.asteroid.diameter?.toFixed(2)} km`,
+            `Velocity: ${context.raw.asteroid.velocity?.toFixed(2)} km/s`,
             `Hazardous: ${context.raw.asteroid.hazardous ? 'Yes' : 'No'}`,
           ],
         },
       },
       legend: {
         labels: {
-          color: 'white', // ← Legend label color
+          color: 'white',
         },
       },
     },
@@ -121,7 +160,7 @@ const SizeVsDistancePlot = () => {
 
   return (
     <div className="max-w-4xl mx-auto bg-black bg-opacity-50 p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Size vs Distance Plot</h2>
+      <h2 className="text-2xl font-bold mb-4 flex justify-center">Size vs Distance Plot</h2>
       <DateForm
         startDate={startDate}
         setStartDate={setStartDate}
@@ -131,9 +170,15 @@ const SizeVsDistancePlot = () => {
         loading={loading}
       />
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-      <div className="mt-6">
-        <Bubble data={chartData} options={chartOptions} />
-      </div>
+      {loading ? (
+        <p className="text-center mt-4">Loading...</p>
+      ) : asteroids.length > 0 ? (
+        <div className="mt-6">
+          <Bubble data={chartData} options={chartOptions} />
+        </div>
+      ) : (
+        <p className="text-center mt-4">No asteroid data available.</p>
+      )}
     </div>
   );
 };
