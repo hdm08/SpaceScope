@@ -10,6 +10,7 @@ import NeoApp from './pages/Neo/Neo';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import PrivateRoute from './components/PrivateRoute';
+import NasaAgent from './pages/Agent/NasaAgent';
 const App = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -42,6 +43,8 @@ const App = () => {
         <Route path="/neo" element={<NeoApp />} />
         <Route path="/login" element={<Login/>} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/NasaAgent" element={<NasaAgent />} />
+
       </Routes>
     </div>
   );

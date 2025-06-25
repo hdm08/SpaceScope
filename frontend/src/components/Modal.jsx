@@ -32,7 +32,7 @@ const Modal = ({ onClose, children, item, page, favorites, setFavorites }) => {
           {children}
 
           {/* Conditional Button Rendering */}
-          {(page === 'Archive' || page === 'Favorites') && item && (
+          {(page === 'Archive' || page === 'Favorites' || page === 'Search') && item && (
             <Button
               apod={item}
               page={page}
