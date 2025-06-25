@@ -2,21 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
+import { getFirestore, doc, onSnapshot, updateDoc, arrayRemove } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import {db} from "../context/firebase"
+
 const FavoritesPage = () => {
     const [favorites, setFavorites] = useState([]);
     const [selectedApod, setSelectedApod] = useState(null);
+    const { user } = useAuth();
 
     useEffect(() => {
-        const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-        setFavorites(storedFavorites);
-    }, []);
+        if (!user) {
+            setFavorites([]);
+            return;
+        }
 
-    const removeFavorite = (date) => {
-        const updatedFavorites = favorites.filter((apod) => apod.date !== date);
-        setFavorites(updatedFavorites);
-        toast.success('Removed from Favorites ');
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        // Subscribe to real-time updates from Firestore
+        const userFavoritesRef = doc(db, 'favorites', user.uid);
+        const unsubscribe = onSnapshot(userFavoritesRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setFavorites(data.favorites || []);
+            } else {
+                setFavorites([]);
+            }
+        }, (error) => {
+            console.error('Error fetching favorites:', error);
+            toast.error('Failed to load favorites');
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, [user]);
+
+    const removeFavorite = async (date) => {
+        try {
+            const userFavoritesRef = doc(db, 'favorites', user.uid);
+            const apodToRemove = favorites.find(fav => fav.date === date);
+            if (apodToRemove) {
+                await updateDoc(userFavoritesRef, {
+                    favorites: arrayRemove(apodToRemove)
+                });
+                // State update is handled by onSnapshot listener
+                toast.success('Removed from Favorites');
+            }
+        } catch (error) {
+            console.error('Error removing favorite:', error);
+            toast.error('Failed to remove from favorites');
+        }
     };
+
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold text-center mb-4">Favorite APODs</h1>

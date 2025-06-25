@@ -1,31 +1,65 @@
 import React from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-
+import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from 'firebase/firestore';
+import {db} from '../context/firebase'
 const Button = ({ apod, page, favorites, setFavorites }) => {
-  const { user } = useAuth(); // Get user from AuthContext
+  const { user } = useAuth();
 
-  const removeFavorite = (date) => {
-    const updatedFavorites = favorites.filter((apod) => apod.date !== date);
-    setFavorites(updatedFavorites);
-    toast.success('Removed from Favorites');
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-  };
-
-  const addFavorite = () => {
-    // Check if user is logged in
+  const addFavorite = async () => {
     if (!user) {
       toast.error('Please login first!');
       return;
     }
 
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    if (!favorites.some((fav) => fav.date === apod.date)) {
-      favorites.push(apod);
-      localStorage.setItem('favorites', JSON.stringify(favorites));
+    try {
+      const userFavoritesRef = doc(db, 'favorites', user.uid);
+      const docSnap = await getDoc(userFavoritesRef);
+      const existingFavorites = docSnap.exists() ? docSnap.data().favorites || [] : [];
+
+      if (existingFavorites.some(fav => fav.date === apod.date)) {
+        toast.error('Already in favorites');
+        return;
+      }
+
+      if (!docSnap.exists()) {
+        await setDoc(userFavoritesRef, { favorites: [apod] });
+      } else {
+        await updateDoc(userFavoritesRef, {
+          favorites: arrayUnion(apod)
+        });
+      }
+      if (typeof setFavorites === 'function') {
+        setFavorites(prev => [...prev, apod]);
+      } else {
+        console.warn('setFavorites is not a function. Favorites state not updated locally.');
+      }
       toast.success('Added to favorites!');
-    } else {
-      toast.error('Already in favorites');
+    } catch (error) {
+      console.error('Error adding favorite:', error);
+      toast.error('Failed to add to favorites');
+    }
+  };
+
+  const removeFavorite = async (date) => {
+    try {
+      const userFavoritesRef = doc(db, 'favorites', user.uid);
+      const apodToRemove = favorites.find(fav => fav.date === date);
+      if (apodToRemove) {
+        await updateDoc(userFavoritesRef, {
+          favorites: arrayRemove(apodToRemove)
+        });
+        if (typeof setFavorites === 'function') {
+          const updatedFavorites = favorites.filter(fav => fav.date !== date);
+          setFavorites(updatedFavorites);
+        } else {
+          console.warn('setFavorites is not a function. Favorites state not updated locally.');
+        }
+        toast.success('Removed from Favorites');
+      }
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+      toast.error('Failed to remove from favorites');
     }
   };
 
