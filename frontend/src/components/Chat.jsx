@@ -39,7 +39,7 @@ function Chat() {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col h-[80vh]">
+    <div className="w-full max-w-2xl bg-indigo rounded-lg shadow-lg p-4 flex flex-col h-[80vh]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, index) => (
           <Message key={index} text={msg.text} sender={msg.sender} />
@@ -52,12 +52,12 @@ function Chat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about NASA data..."
-          className="flex-1 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 p-2 rounded bg-black bg-opacity-50 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
-        >
+          className="h-11 w-full sm:w-32 px-5 rounded bg-indigo-700 hover:bg-indigo-800 text-white font-semibold transition"
+          >
           Send
         </button>
       </form>

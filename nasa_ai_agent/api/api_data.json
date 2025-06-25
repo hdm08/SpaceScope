@@ -1,0 +1,64 @@
+{
+    "apis": [
+      {
+        "name": "APOD",
+        "description": "Astronomy Picture of the Day",
+        "keywords": ["picture of the day", "apod", "astronomy image"],
+        "endpoint": "https://api.nasa.gov/planetary/apod"
+      },
+      {
+        "name": "NEO Feed",
+        "description": "Near-Earth Object feed",
+        "keywords": ["asteroid", "neo", "near earth object"],
+        "endpoint": "https://api.nasa.gov/neo/rest/v1/feed"
+      },
+      {
+        "name": "EPIC",
+        "description": "Earth Polychromatic Imaging Camera",
+        "keywords": ["epic", "earth image"],
+        "endpoint": "https://api.nasa.gov/EPIC/api/natural"
+      },
+      {
+        "name": "Image Search",
+        "description": "NASA Image and Video Library",
+        "keywords": ["image", "photo", "picture"],
+        "endpoint": "https://images-api.nasa.gov/search"
+      },
+      {
+        "name": "Mars Weather",
+        "description": "InSight Mars Weather Data",
+        "keywords": ["mars weather", "insight"],
+        "endpoint": "https://api.nasa.gov/insight_weather/"
+      },
+      {
+        "name": "TLE",
+        "description": "Two-Line Element Sets for satellites",
+        "keywords": ["satellite", "tle", "orbit"],
+        "endpoint": "https://tle.ivanstanojevic.me/api/tle/"
+      },
+      {
+        "name": "DONKI CME",
+        "description": "Coronal Mass Ejection data",
+        "keywords": ["coronal mass ejection", "cme", "solar event"],
+        "endpoint": "https://api.nasa.gov/DONKI/CME"
+      },
+      {
+        "name": "DONKI FLR",
+        "description": "Solar Flare data",
+        "keywords": ["solar flare", "flr", "solar event"],
+        "endpoint": "https://api.nasa.gov/DONKI/FLR"
+      },
+      {
+        "name": "Mars Photos",
+        "description": "Curiosity Rover photos",
+        "keywords": ["mars photo", "curiosity", "rover"],
+        "endpoint": "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos"
+      },
+      {
+        "name": "Exoplanets Transiting",
+        "description": "Confirmed exoplanets that transit their host stars",
+        "keywords": ["exoplanet", "transiting planet", "kepler"],
+        "endpoint": "https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?&table=exoplanets&format=ipac&where=pl_tranflag=1"
+      }
+    ]
+  }
