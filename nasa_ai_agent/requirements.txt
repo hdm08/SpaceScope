@@ -1,0 +1,6 @@
+django==4.2.7
+requests==2.31.0
+django-cors-headers==4.3.0
+huggingface_hub
+openai
+python-dotenv
