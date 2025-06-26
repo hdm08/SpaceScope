@@ -8,6 +8,10 @@ import { Video } from 'lucide-react';
 import debounce from 'lodash/debounce';
 import { useCache } from '../components/CacheProvider';
 import toast from 'react-hot-toast';
+import Button from '../components/Button';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../context/firebase';
 
 const MIN = 1960;
 const MAX = 2025;
@@ -21,7 +25,30 @@ const Search = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [mediaFavorites, setMediaFavorites] = useState([]);
   const { getCache, setCache, isCacheValid } = useCache();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      setMediaFavorites([]);
+      return;
+    }
+
+    const userFavoritesRef = doc(db, 'favorites', user.uid);
+    const unsubscribe = onSnapshot(userFavoritesRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setMediaFavorites(docSnap.data().mediaFavorites || []);
+      } else {
+        setMediaFavorites([]);
+      }
+    }, (error) => {
+      console.error('Error fetching media favorites:', error);
+      toast.error('Failed to load media favorites');
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const fetchTrending = async () => {
     const cacheKey = `search:trending:${new Date().getFullYear()}`;
@@ -43,8 +70,8 @@ const Search = () => {
           year_end: new Date().getFullYear(),
         },
       });
-      console.log('Trending Response:', response.data.length, response.data.slice(0, 2)); // Debug log
-      setTrendingPhotos(response.data || []);
+      console.log('Trending Response:', response.data.length, response.data.slice(0, 2));
+      setTrendingPhotos(response.data.filter(item => item?.data?.[0]?.nasa_id) || []);
       setCache(cacheKey, response.data);
     } catch (err) {
       console.error('Error fetching trending data:', err.response?.data || err.message);
@@ -82,8 +109,8 @@ const Search = () => {
           year_end: yearRange[1],
         },
       });
-      console.log('Search Response:', response.data.length, response.data.slice(0, 2)); // Debug log
-      setResults(response.data || []);
+      console.log('Search Response:', response.data.length, response.data.slice(0, 2));
+      setResults(response.data.filter(item => item?.data?.[0]?.nasa_id) || []);
       setCache(cacheKey, response.data);
     } catch (err) {
       console.error('Error fetching search data:', err.response?.data || err.message);
@@ -112,22 +139,19 @@ const Search = () => {
   };
 
   const getPreviewUrl = (item) => {
-    const links = item.links || [];
-    const preview = links.find((link) => link.rel === 'preview');
+    if (!item?.links) return 'https://via.placeholder.com/150';
+    const preview = item.links.find((link) => link.rel === 'preview');
     return preview?.href || 'https://via.placeholder.com/150';
   };
 
   const getFullUrl = (item) => {
-    const links = item.links || [];
-    const preview = links.find((link) => link.rel === 'preview');
+    if (!item?.links) return 'https://via.placeholder.com/150';
+    const preview = item.links.find((link) => link.rel === 'preview');
     if (preview?.href) return preview.href;
-
-    const mediaLink = links.find((link) =>
+    const mediaLink = item.links.find((link) =>
       link.href?.endsWith('.mp4') || link.href?.endsWith('.mp3') || link.href?.endsWith('.wav')
     );
-    if (mediaLink?.href) return mediaLink.href;
-
-    return 'https://via.placeholder.com/150';
+    return mediaLink?.href || 'https://via.placeholder.com/150';
   };
 
   return (
@@ -180,7 +204,7 @@ const Search = () => {
                   </div>
                 )}
                 renderThumb={({ props }) => (
-                  <div {...props} className="w-5 h-5 rundt-full bg-blue-500 shadow" />
+                  <div {...props} className="w-5 h-5 rounded-full bg-blue-500 shadow" />
                 )}
               />
             </div>
@@ -200,8 +224,49 @@ const Search = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {trendingPhotos.map((item, index) => (
+                item?.data?.[0]?.nasa_id && (
+                  <div
+                    key={item.data[0].nasa_id}
+                    className="relative group cursor-pointer"
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <img
+                      src={getPreviewUrl(item)}
+                      alt={item.data[0]?.title || 'NASA Media'}
+                      className="w-full h-48 object-cover rounded"
+                    />
+                    {item.data[0]?.media_type === 'video' && (
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-60 p-1 rounded-full">
+                        <Video className="text-white w-6 h-6" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white p-4 rounded">
+                      <div>
+                        <h3 className="text-lg font-bold">{item.data[0]?.title || 'Untitled'}</h3>
+                        <p>
+                          {item.data[0]?.date_created
+                            ? new Date(item.data[0].date_created).toLocaleDateString()
+                            : 'N/A'}
+                        </p>
+                        <p>{item.data[0]?.description?.substring(0, 100) || 'No description'}...</p>
+                      </div>
+                    </div>
+                    
+                  </div>
+                )
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {results.length === 0 ? (
+            <p className="text-white text-center col-span-full">No search results found for "{query}".</p>
+          ) : (
+            results.map((item, index) => (
+              item?.data?.[0]?.nasa_id && (
                 <div
-                  key={item.data[0]?.nasa_id || index}
+                  key={item.data[0].nasa_id}
                   className="relative group cursor-pointer"
                   onClick={() => setSelectedItem(item)}
                 >
@@ -226,50 +291,15 @@ const Search = () => {
                       <p>{item.data[0]?.description?.substring(0, 100) || 'No description'}...</p>
                     </div>
                   </div>
+                  
                 </div>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {results.length === 0 ? (
-            <p className="text-white text-center col-span-full">No search results found for "{query}".</p>
-          ) : (
-            results.map((item, index) => (
-              <div
-                key={item.data[0]?.nasa_id || index}
-                className="relative group cursor-pointer"
-                onClick={() => setSelectedItem(item)}
-              >
-                <img
-                  src={getPreviewUrl(item)}
-                  alt={item.data[0]?.title || 'NASA Media'}
-                  className="w-full h-48 object-cover rounded"
-                />
-                {item.data[0]?.media_type === 'video' && (
-                  <div className="absolute top-2 right-2 bg-black bg-opacity-60 p-1 rounded-full">
-                    <Video className="text-white w-6 h-6" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white p-4 rounded">
-                  <div>
-                    <h3 className="text-lg font-bold">{item.data[0]?.title || 'Untitled'}</h3>
-                    <p>
-                      {item.data[0]?.date_created
-                        ? new Date(item.data[0].date_created).toLocaleDateString()
-                        : 'N/A'}
-                    </p>
-                    <p>{item.data[0]?.description?.substring(0, 100) || 'No description'}...</p>
-                  </div>
-                </div>
-              </div>
+              )
             ))
           )}
         </div>
       )}
 
-      {selectedItem && (
+      {selectedItem && selectedItem?.data?.[0]?.nasa_id && (
         <Modal onClose={() => setSelectedItem(null)} item={selectedItem} page="Search">
           <h2 className="text-2xl font-bold mb-2">{selectedItem.data[0]?.title || 'Untitled'}</h2>
           {selectedItem.data[0]?.media_type === 'image' && (
@@ -324,6 +354,12 @@ const Search = () => {
           {selectedItem.data[0]?.secondary_creator && (
             <p><strong>Secondary Creator:</strong> {selectedItem.data[0]?.secondary_creator}</p>
           )}
+          <Button
+            item={selectedItem}
+            page="Search"
+            favorites={mediaFavorites}
+            setFavorites={setMediaFavorites}
+          />
         </Modal>
       )}
     </div>

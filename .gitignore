@@ -1,10 +1,18 @@
-# Node
 node_modules/
 .env
-
-# Build
 dist/
 build/
-
-# OS
 .DS_Store
+venv/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.vscode/
+.logs/
+logs/
+.nginx.conf
+.DS_Store
+migrations/
+.env/
+nasa_ai_agent/.env

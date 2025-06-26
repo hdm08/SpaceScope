@@ -30,16 +30,6 @@ const Modal = ({ onClose, children, item, page, favorites, setFavorites }) => {
 
           {/* Modal Content */}
           {children}
-
-          {/* Conditional Button Rendering */}
-          {(page === 'Archive' || page === 'Favorites' || page === 'Search') && item && (
-            <Button
-              apod={item}
-              page={page}
-              favorites={favorites}
-              setFavorites={setFavorites}
-            />
-          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

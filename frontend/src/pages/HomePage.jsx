@@ -6,20 +6,42 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import Button from '../components/Button';
 import { useCache } from '../components/CacheProvider';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../context/firebase';
 
 const HomePage = () => {
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [apodFavorites, setApodFavorites] = useState([]);
   const { getCache, setCache, isCacheValid } = useCache();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      setApodFavorites([]);
+    } else {
+      const userFavoritesRef = doc(db, 'favorites', user.uid);
+      const unsubscribe = onSnapshot(userFavoritesRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setApodFavorites(docSnap.data().apodFavorites || []);
+        } else {
+          setApodFavorites([]);
+        }
+      }, (error) => {
+        console.error('Error fetching APOD favorites:', error);
+        toast.error('Failed to load APOD favorites');
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchAPOD = async () => {
-      // Use current date as cache key (e.g., apod:2025-06-24)
       const today = new Date().toISOString().split('T')[0];
       const cacheKey = `apod:${today}`;
 
-      // Check cache
       if (isCacheValid(cacheKey)) {
         const cachedData = getCache(cacheKey);
         if (cachedData) {
@@ -34,7 +56,7 @@ const HomePage = () => {
         const response = await axios.get('http://localhost:4000/api/apod');
         const data = response.data;
         setApod(data);
-        setCache(cacheKey, data); // Cache the response
+        setCache(cacheKey, data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch APOD. Please try again later.');
@@ -59,7 +81,6 @@ const HomePage = () => {
       <p className="text-2xl font-bold text-white text-center mb-4">{apod.date}</p>
       <br />
       <div className="max-w-6xl mx-auto mt-6 flex flex-col md:flex-row gap-6">
-        {/* Left Side: Image section */}
         <div className="flex-shrink-0">
           {apod.media_type === 'image' ? (
             <img
@@ -76,8 +97,6 @@ const HomePage = () => {
             />
           )}
         </div>
-
-        {/* Right side: Text content */}
         <div className="flex-grow text-white">
           <h1 className="text-xl font-bold mb-2">{apod.title}</h1>
           <br />
@@ -85,7 +104,12 @@ const HomePage = () => {
           {apod.copyright && (
             <p className="mt-4 text-sm text-gray-400 italic">© {apod.copyright}</p>
           )}
-          <Button apod={apod} page="Home" />
+          <Button
+            item={apod}
+            page="Home"
+            favorites={apodFavorites}
+            setFavorites={setApodFavorites}
+          />
         </div>
       </div>
     </motion.div>

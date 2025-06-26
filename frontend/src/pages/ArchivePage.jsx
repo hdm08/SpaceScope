@@ -7,6 +7,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import toast from 'react-hot-toast';
 import { useCache } from '../components/CacheProvider';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../context/firebase';
+import Button from '../components/Button';
 import '../styles/masonry.css';
 
 const ArchivePage = () => {
@@ -16,7 +20,28 @@ const ArchivePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedApod, setSelectedApod] = useState(null);
+  const [apodFavorites, setApodFavorites] = useState([]);
   const { getCache, setCache, isCacheValid } = useCache();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      setApodFavorites([]);
+    } else {
+      const userFavoritesRef = doc(db, 'favorites', user.uid);
+      const unsubscribe = onSnapshot(userFavoritesRef, (docSnap) => {
+        if (docSnap.exists()) {
+          setApodFavorites(docSnap.data().apodFavorites || []);
+        } else {
+          setApodFavorites([]);
+        }
+      }, (error) => {
+        console.error('Error fetching APOD favorites:', error);
+        toast.error('Failed to load APOD favorites');
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchArchive = async () => {
@@ -26,7 +51,6 @@ const ArchivePage = () => {
       const curMonth = String(today.getMonth() + 1).padStart(2, '0');
       const isCurrentMonth = curYear == year && curMonth === month.padStart(2, '0');
 
-      // Check cache
       if (isCacheValid(cacheKey) && !isCurrentMonth) {
         const cachedData = getCache(cacheKey);
         if (cachedData) {
@@ -38,9 +62,8 @@ const ArchivePage = () => {
 
       try {
         setLoading(true);
-        const sd = `${year}-${month.padStart(2, '0')}-01`; // Month prefix 2 -> 02
-        let ed = new Date(year, month, 0).toISOString().split('T')[0]; // Last day of the month
-
+        const sd = `${year}-${month.padStart(2, '0')}-01`;
+        let ed = new Date(year, month, 0).toISOString().split('T')[0];
         if (isCurrentMonth) {
           ed = today.toISOString().split('T')[0];
         }
@@ -52,7 +75,7 @@ const ArchivePage = () => {
         const data = response.data;
         setApods(data);
         if (!isCurrentMonth) {
-          setCache(cacheKey, data); // Cache for past months
+          setCache(cacheKey, data);
         }
         setLoading(false);
       } catch (err) {
@@ -126,6 +149,12 @@ const ArchivePage = () => {
             </div>
           )}
           <p className="mt-4 text-justify">{selectedApod.explanation}</p>
+          <Button
+            item={selectedApod}
+            page="Archive"
+            favorites={apodFavorites}
+            setFavorites={setApodFavorites}
+          />
         </Modal>
       )}
     </div>
