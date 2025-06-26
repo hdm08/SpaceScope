@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 from dotenv import load_dotenv
 import os
+from pathlib import Path  # ✅ Add this
+
 # Load .env file
-env_path = Path(__file__).resolve().parent.parent / '.env'
+env_path = Path(__file__).resolve().parent.parent / '.env'  # Adjusted to reach root from settings.py
 load_dotenv(dotenv_path=env_path)
 
 # Access the API key
@@ -39,13 +40,13 @@ CORS_ALLOWED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    "api"
+,    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'api.apps.ApiConfig',
     'corsheaders',
 ]
 
@@ -133,3 +134,5 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+NASA_API_KEY = os.getenv('NASA_API_KEY')
+NASA_ASSISTANT_ID = ""

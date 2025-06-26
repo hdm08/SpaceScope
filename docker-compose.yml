@@ -17,8 +17,21 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"   # map container port 80 (nginx) to 5173 on host (Vite default port)
+      - "5173:5173"
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
+
+  nasa_ai_agent:
+    build:
+      context: ./nasa_ai_agent
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=abcdxyz
+    ports:
+      - "8000:8000"
+    depends_on:
+      - frontend
+    volumes:
+      - ./nasa_ai_agent:/app

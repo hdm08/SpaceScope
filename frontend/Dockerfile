@@ -1,5 +1,4 @@
-# frontend/Dockerfile
-FROM node:18-alpine as build
+FROM --platform=linux/amd64 node:18
 
 WORKDIR /app
 
@@ -7,13 +6,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
 
-# Serve with nginx
-FROM nginx:alpine
+EXPOSE 5173
 
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev", "--", "--host"]
