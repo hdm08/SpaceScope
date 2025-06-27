@@ -25,7 +25,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-transparent text-white p-4 flex items-center justify-between">
-      <div className="container mx-auto flex items-center space-x-4">
+      <div className="flex items-center space-x-4">
         <Link to="/">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg"
@@ -35,25 +35,25 @@ const Navbar = () => {
         </Link>
         <ul className="flex space-x-4">
           <li>
-            <Link to="/" className="block py-2 hover:underline">Home</Link>
+            <Link to="/" className="hover:underline">Home</Link>
           </li>
           <li>
-            <Link to={`/archive/${year}/${month}`} className="block py-2 hover:underline">Archive</Link>
+            <Link to={`/archive/${year}/${month}`} className="hover:underline">Archive</Link>
           </li>
           <li>
-            <Link to="/favorites" className="block py-2 hover:underline">Favorites</Link>
+            <Link to="/favorites" className="hover:underline">Favorites</Link>
           </li>
           <li>
-            <Link to="/mars_weather" className="block py-2 hover:underline">Mars</Link>
+            <Link to="/mars_weather" className="hover:underline">Mars</Link>
           </li>
           <li>
-            <Link to="/search" className="block py-2 hover:underline">Search</Link>
+            <Link to="/search" className="hover:underline">Search</Link>
           </li>
           <li>
-            <Link to="/neo" className="block py-2 hover:underline">Neo</Link>
+            <Link to="/neo" className="hover:underline">Neo</Link>
           </li>
           <li>
-            <Link to="/NasaAgent" className="block py-2 hover:underline">SKAI</Link>
+            <Link to="/NasaAgent" className="hover:underline">SKAI</Link>
           </li>
         </ul>
       </div>
@@ -62,20 +62,20 @@ const Navbar = () => {
         {!user ? (
           <>
             <Link to="/login">
-              <button className="block py-2 px-3 text-sm border border-white rounded hover:bg-white hover:text-black transition">
+              <button className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition">
                 Login
               </button>
             </Link>
             <Link to="/signup">
-              <button className="block py-2 px-3 text-sm border border-white rounded hover:bg-white hover:text-black transition">
-                SignUp
+              <button className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition">
+                Sign Up
               </button>
             </Link>
           </>
         ) : (
           <button
             onClick={handleLogout}
-            className="block py-2 px-3  text-sm border border-white rounded hover:bg-white hover:text-black transition"
+            className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition"
           >
             Logout
           </button>
