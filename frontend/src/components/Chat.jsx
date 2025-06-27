@@ -29,7 +29,7 @@ function Chat() {
     setInput('');
 
     try {
-      const response = await fetch(`${BASE_SKAI_API_URL}/api/query`, {
+      const response = await fetch(`${BASE_SKAI_API_URL}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: input }),

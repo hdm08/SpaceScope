@@ -5,4 +5,4 @@
 
 // For Production setup
 export const BASE_BE_API_URL = 'https://spacescope-backend.onrender.com/api';
-export const BASE_SKAI_API_URL = 'https://spacescope-skai.onrender.com';
+export const BASE_SKAI_API_URL = 'https://spacescope-skai.onrender.com/api';
