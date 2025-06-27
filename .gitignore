@@ -15,4 +15,4 @@ logs/
 .DS_Store
 migrations/
 .env/
-nasa_ai_agent/.env
+skai/.env
