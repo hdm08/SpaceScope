@@ -24,9 +24,9 @@ services:
     environment:
       - NODE_ENV=development
 
-  nasa_ai_agent:
+  skai:
     build:
-      context: ./nasa_ai_agent
+      context: ./skai
       dockerfile: Dockerfile
     environment:
       - OPENAI_API_KEY=abcdxyz
@@ -35,4 +35,4 @@ services:
     depends_on:
       - frontend
     volumes:
-      - ./nasa_ai_agent:/app
+      - ./skai:/app
