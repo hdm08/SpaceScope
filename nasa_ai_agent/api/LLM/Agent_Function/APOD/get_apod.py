@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 import json
 
+# Fetch APOD details based on date
 def get_apod(date: str = '') -> dict:
 
     print(f"Calling APOD API with date: {date}")

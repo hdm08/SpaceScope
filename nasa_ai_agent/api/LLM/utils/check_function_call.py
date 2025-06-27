@@ -1,12 +1,9 @@
-from ..Agent_Function.get_apod import get_apod
 import json
 import time
+from .function_calls import function_calls
 
 def execute_function(function_name: str, arguments: dict) -> dict:
-    function_map = {
-        "get_apod": get_apod,
-        # Add other functions here if needed, e.g., "get_wikipedia_data": get_wikipedia_data
-    }
+    function_map = function_calls()
     
     if function_name not in function_map:
         return {"status": "error", "error": f"Unknown function {function_name}"}
