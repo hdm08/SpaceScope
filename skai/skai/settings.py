@@ -32,13 +32,13 @@ SECRET_KEY = "django-insecure-ozo@lj4e!v%_5lv-b0wwr9=2lxs834o-#&@)b(5s#)^ol=m+)z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','spacescope-skai.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.getenv('ALLOWED_HOSTS')]
 
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://spacescope.onrender.com"
-]
+    os.getenv('CORS_ALLOWED_ORIGINS')
+    ]
 # Application definition
 
 INSTALLED_APPS = [

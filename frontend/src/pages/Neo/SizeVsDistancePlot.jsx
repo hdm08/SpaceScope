@@ -12,7 +12,7 @@ import 'chart.js/auto';
 import DateForm from '../../components/DateForm';
 import dayjs from 'dayjs';
 import { useCache } from '../../components/CacheProvider'; 
-import {BASE_BE_API_URL} from '../../components/api'
+import {VITE_BASE_BE_API_URL} from '../../components/api'
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
@@ -72,7 +72,7 @@ const SizeVsDistancePlot = () => {
     }
 
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
       const data = response.data;
       if (data && data.near_earth_objects) {
         setCache(cacheKey, data, 300000); 

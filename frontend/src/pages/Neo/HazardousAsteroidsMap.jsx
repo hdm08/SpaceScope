@@ -10,7 +10,7 @@ import 'leaflet/dist/leaflet.css';
 import DateForm from '../../components/DateForm';
 import dayjs from 'dayjs';
 import { useCache } from '../../components/CacheProvider'; 
-import {BASE_BE_API_URL} from "../../components/api"
+import {VITE_BASE_BE_API_URL} from "../../components/api"
 
 const today = new Date().toISOString().slice(0, 10);
 const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -61,7 +61,7 @@ const HazardousAsteroidsMap = () => {
     }
 
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
       const data = response.data;
       // Validate API response
       if (data && data.near_earth_objects) {

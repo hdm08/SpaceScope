@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { useCache } from '../../components/CacheProvider';
-import {BASE_BE_API_URL} from '../../components/api'
+import {VITE_BASE_BE_API_URL} from '../../components/api'
 
 ChartJS.register(PointElement, LineElement, LinearScale, TimeScale, Tooltip, Legend);
 
@@ -46,7 +46,7 @@ const HistoricCloseApproaches = () => {
         setError(null);
 
         try {
-            const response = await axios.get(`${BASE_BE_API_URL}/neo/lookup/${asteroidId}`);
+            const response = await axios.get(`${VITE_BASE_BE_API_URL}/neo/lookup/${asteroidId}`);
             const data = response.data;
             if (data && data.id) {
                 setCache(cacheKey, data, 600000);

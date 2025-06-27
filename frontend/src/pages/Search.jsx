@@ -12,7 +12,7 @@ import Button from '../components/Button';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../context/firebase';
-import {BASE_BE_API_URL} from "../components/api"
+import {VITE_BASE_BE_API_URL} from "../components/api"
 
 const MIN = 1960;
 const MAX = 2025;
@@ -65,7 +65,7 @@ const Search = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/search`, {
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/search`, {
         params: {
           year_start: new Date().getFullYear() - 1,
           year_end: new Date().getFullYear(),
@@ -102,7 +102,7 @@ const Search = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/search`, {
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/search`, {
         params: {
           q: query,
           media_type: mediaType || undefined,
