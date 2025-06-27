@@ -3,6 +3,8 @@ import ErrorMessage from '../components/ErrorMessage';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Modal from '../components/Modal';
 import axios from 'axios';
+import {BASE_BE_API_URL} from "../components/api"
+
 const WeatherDashboard = () => {
     const [weatherData, setWeatherData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const WeatherDashboard = () => {
       const fetchData = async () => {
         setLoading(true);
         try {
-          const response = await axios.get('http://localhost:4000/api/weather');
+          const response = await axios.get(`${BASE_BE_API_URL}/weather`);
   
           const data = response.data;
           const validSols = Object.fromEntries(

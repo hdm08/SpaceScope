@@ -1,18 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// Create Cache Context
 const CacheContext = createContext();
 
-// Cache Provider Component
 const CacheProvider = ({ children }) => {
   const [cache, setCacheState] = useState({});
 
-  // ✅ FIXED: Properly closed getCache function
   const getCache = (key) => {
     return cache[key] || null;
   };
 
-  // Set cache value with optional TTL (in milliseconds)
   const setCache = (key, value, ttl = null) => {
     setCacheState((prevCache) => ({
       ...prevCache,
@@ -29,7 +25,6 @@ const CacheProvider = ({ children }) => {
     }
   };
 
-  // Clear cache by key or entirely
   const clearCache = (key = null) => {
     if (key) {
       setCacheState((prevCache) => {
@@ -41,11 +36,9 @@ const CacheProvider = ({ children }) => {
     }
   };
 
-  // Check if cache entry is valid (not expired)
   const isCacheValid = (key) => {
     const entry = cache[key];
     if (!entry) return false;
-    // You can add more logic here to check expiration if needed
     return true;
   };
 
@@ -63,7 +56,6 @@ const CacheProvider = ({ children }) => {
   );
 };
 
-// Custom hook to access cache
 const useCache = () => {
   const context = useContext(CacheContext);
   if (!context) {

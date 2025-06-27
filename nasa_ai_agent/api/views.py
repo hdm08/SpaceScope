@@ -13,21 +13,18 @@ def query_nasa(request):
     print("Received request to query_nasa")
     
     try:
-        # Parse request body
         data = json.loads(request.body)
         query = data.get('query', '').strip()
         thread_id = data.get('thread_id', None)
         
         print(f"Parsed query: {query}, thread_id: {thread_id}")
         
-        # Validate inputs
         if not query:
             print("Error: Query is required.")
             return JsonResponse({'response': 'Error: Query is required.'}, status=400)
         
         if thread_id:
             try:
-                # Validate thread_id as UUID
                 uuid.UUID(thread_id)
             except ValueError:
                 print(f"Error: Invalid thread_id format: {thread_id}")
@@ -44,7 +41,6 @@ def query_nasa(request):
             print(f"openAIAgent error: {error_message}")
             return JsonResponse({'response': f'Error: {error_message}'}, status=agent_response.status_code)
         
-        # Success case: agent_response is a dictionary
         print(f"openAIAgent success: response: {agent_response['response']} query_id={agent_response['query_id']}, thread_id={agent_response['thread_id']}")
         response_data = {
             'response': agent_response['response'],
@@ -52,7 +48,6 @@ def query_nasa(request):
             'thread_id': agent_response['thread_id'],
         }
         
-        # Optional: Log query_id for tracking (e.g., to a file or database)
         print(f"Query ID {response_data['query_id']} logged for tracking")
         
         return JsonResponse(response_data, status=200)

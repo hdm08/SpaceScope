@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "4000:4000"
     volumes:
       - ./backend:/app
     environment:
@@ -20,6 +20,9 @@ services:
       - backend
     volumes:
       - ./frontend:/app
+      - /app/node_modules  # This prevents local node_modules from overriding container's
+    environment:
+      - NODE_ENV=development
 
   nasa_ai_agent:
     build:

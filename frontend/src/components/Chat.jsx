@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
+import {BASE_SKAI_API_URL} from '../components/api';
 
 function Chat() {
   const [messages, setMessages] = useState([
@@ -28,7 +29,7 @@ function Chat() {
     setInput('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/query', {
+      const response = await fetch(`${BASE_SKAI_API_URL}/api/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: input }),

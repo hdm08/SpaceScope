@@ -3,7 +3,6 @@ const axios = require('axios');
 const GetRangeAPOD = async(req, res) => {
     try{
       const {startDate, endDate} = req.query
-      console.log(startDate, endDate);
       const response = await axios.get('https://api.nasa.gov/planetary/apod', {
           params: { 
               'start_date': startDate,

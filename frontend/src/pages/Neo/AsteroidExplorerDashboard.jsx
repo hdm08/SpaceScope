@@ -4,6 +4,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import AsteroidModal from '../../components/AsteroidModal';
 import { useCache } from '../../components/CacheProvider';
+import {BASE_BE_API_URL} from "../../components/api"
 
 const AsteroidExplorerDashboard = () => {
   const [asteroids, setAsteroids] = useState([]);
@@ -31,7 +32,7 @@ const AsteroidExplorerDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://localhost:4000/api/neo/browse', {
+      const response = await axios.get(`${BASE_BE_API_URL}/neo/browse`, {
         params: { page: page, size: 20 },
       });
       const data = response.data;
@@ -65,7 +66,7 @@ const AsteroidExplorerDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:4000/api/neo/lookup/${asteroidId}`);
+      const response = await axios.get(`${BASE_BE_API_URL}/neo/lookup/${asteroidId}`);
       const data = response.data;
       if (data && data.id) {
         setCache(cacheKey, data, 600000);
