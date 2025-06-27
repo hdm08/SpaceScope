@@ -12,9 +12,9 @@ import {
 import 'chartjs-adapter-date-fns';
 import { Chart } from 'react-chartjs-2';
 import DateForm from '../../components/DateForm';
-import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
+import { useCache } from '../../components/CacheProvider'; 
+import {BASE_BE_API_URL} from "../../components/api"
 
-// Register necessary Chart.js components
 ChartJS.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
 
 const today = new Date().toISOString().slice(0, 10);
@@ -31,10 +31,10 @@ const CloseApproachTimeline = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { getCache, setCache, isCacheValid } = useCache(); // Access cache functions
+  const { getCache, setCache, isCacheValid } = useCache();
 
   const fetchAsteroids = async () => {
-    setError(null); // Clear previous errors
+    setError(null); 
     const start = dayjs(startDate);
     const end = dayjs(endDate);
     const diff = end.diff(start, 'day');
@@ -49,7 +49,7 @@ const CloseApproachTimeline = () => {
       return;
     }
 
-    const cacheKey = `asteroids_feed_${startDate}_${endDate}`; // Unique cache key
+    const cacheKey = `asteroids_feed_${startDate}_${endDate}`; 
     const cachedData = getCache(cacheKey);
 
     // Validate cached data
@@ -73,7 +73,7 @@ const CloseApproachTimeline = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:4000/api/neo/feed/", {
+      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed/`, {
         params: { SD: startDate, ED: endDate }
       });
       const data = response.data;

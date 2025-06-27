@@ -67,7 +67,7 @@ def check_function_call(required_action, thread_id: str, run_id: str, client) ->
             run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
 
         if run.status == "completed":
-            # Retrieve the latest assistant message
+            # Retrieving the latest assistant message
             messages = client.beta.threads.messages.list(thread_id=thread_id, limit=1)
             response_text = messages.data[0].content[0].text.value if messages.data else ""
             print(f"Run completed. Response: {response_text[:100]}...")

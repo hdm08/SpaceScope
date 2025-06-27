@@ -1,16 +1,7 @@
-const express = require('express');
 const axios = require('axios');
-const NodeCache = require('node-cache');
-const cache = new NodeCache({ stdTTL: 3600 });
 
 const NeoLookup = async (req, res) => {
-  const { asteroidId } = req.params; // ✅ FIXED
-  const cacheKey = `lookup_${asteroidId}`;
-  const cachedData = cache.get(cacheKey);
-
-  if (cachedData) {
-    return res.json(cachedData);
-  }
+  const { asteroidId } = req.params;
 
   try {
     const response = await axios.get(
@@ -22,10 +13,9 @@ const NeoLookup = async (req, res) => {
       }
     );
 
-    cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('NASA API fetch error:', error.response?.data || error.message); // ✅ Add logging
+    console.error('NASA API fetch error:', error.response?.data || error.message); 
     res.status(500).json({ error: 'Failed to fetch Neo Lookup data' });
   }
 };

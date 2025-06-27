@@ -11,11 +11,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import PrivateRoute from './components/PrivateRoute';
 import NasaAgent from './pages/Agent/NasaAgent';
-const App = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-
+const App = () => {  
   return (
     <div className="min-h-screen bg-transparent text-white" >
       <video

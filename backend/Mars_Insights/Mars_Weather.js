@@ -1,6 +1,5 @@
 const axios = require('axios');
 
-
 const Weather = async(req, res) =>{
     try {
         const params = {
@@ -11,13 +10,13 @@ const Weather = async(req, res) =>{
     
         const response = await axios.get("https://api.nasa.gov/insight_weather/", { params });
         const data = response.data;
-        // console.log(data); 
-        // Filter out invalid sols based on validity_checks
+        
+        // Filtering out invalid sols based on validity_checks
         const validSols = Object.fromEntries(
           Object.entries(data).filter(([sol, solData]) => sol !== 'validity_checks' && sol !== 'sol_keys' && data.validity_checks[sol]?.AT?.valid)
         );
     
-        // Include validity_checks and sol_keys for completeness
+        // Including validity_checks and sol_keys for completeness
         const responseData = {
           ...validSols,
           validity_checks: data.validity_checks,

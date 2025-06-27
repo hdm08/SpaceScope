@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { db } from '../context/firebase';
 import Button from '../components/Button';
 import '../styles/masonry.css';
+import {BASE_BE_API_URL} from "../components/api"
 
 const ArchivePage = () => {
   const { year, month } = useParams();
@@ -68,7 +69,7 @@ const ArchivePage = () => {
           ed = today.toISOString().split('T')[0];
         }
 
-        const response = await axios.get('http://localhost:4000/api/apod/range', {
+        const response = await axios.get(`${BASE_BE_API_URL}/apod/range`, {
           params: { startDate: sd, endDate: ed },
         });
 

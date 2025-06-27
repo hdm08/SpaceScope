@@ -9,7 +9,8 @@ import {
 import 'leaflet/dist/leaflet.css';
 import DateForm from '../../components/DateForm';
 import dayjs from 'dayjs';
-import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
+import { useCache } from '../../components/CacheProvider'; 
+import {BASE_BE_API_URL} from "../../components/api"
 
 const today = new Date().toISOString().slice(0, 10);
 const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -23,7 +24,7 @@ const HazardousAsteroidsMap = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { getCache, setCache, isCacheValid } = useCache(); // Access cache functions
+  const { getCache, setCache, isCacheValid } = useCache(); 
 
   const fetchAsteroids = async () => {
     setLoading(true);
@@ -39,7 +40,7 @@ const HazardousAsteroidsMap = () => {
       return;
     }
 
-    const cacheKey = `asteroids_map_${startDate}_${endDate}`; // Unique cache key
+    const cacheKey = `asteroids_map_${startDate}_${endDate}`; 
     const cachedData = getCache(cacheKey);
 
     // Validate cached data
@@ -50,7 +51,6 @@ const HazardousAsteroidsMap = () => {
           name: asteroid.name,
           missDistance: parseFloat(asteroid.close_approach_data[0]?.miss_distance.astronomical),
           hazardous: asteroid.is_potentially_hazardous_asteroid,
-          // Simulated lat/lng for visualization (NASA API doesn't provide this)
           lat: Math.random() * 180 - 90,
           lng: Math.random() * 360 - 180,
         }))
@@ -61,7 +61,7 @@ const HazardousAsteroidsMap = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:4000/api/neo/feed?start_date=${startDate}&end_date=${endDate}`);
+      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
       const data = response.data;
       // Validate API response
       if (data && data.near_earth_objects) {
@@ -83,7 +83,7 @@ const HazardousAsteroidsMap = () => {
         setError('Invalid data format received from API.');
       }
     } catch (err) {
-      setAsteroids([]); // Fallback to empty array on error
+      setAsteroids([]); 
       setError('Failed to fetch asteroid data');
     } finally {
       setLoading(false);
@@ -92,7 +92,7 @@ const HazardousAsteroidsMap = () => {
 
   useEffect(() => {
     fetchAsteroids();
-  }, [startDate, endDate]); // Trigger fetch when dates change
+  }, [startDate, endDate]); 
 
   return (
     <div className="max-w-4xl mx-auto bg-black bg-opacity-50 p-6 rounded-lg shadow-md">

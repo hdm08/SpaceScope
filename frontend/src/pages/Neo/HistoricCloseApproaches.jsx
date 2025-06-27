@@ -13,8 +13,8 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { useCache } from '../../components/CacheProvider';
+import {BASE_BE_API_URL} from '../../components/api'
 
-// Register required chart.js components for line chart
 ChartJS.register(PointElement, LineElement, LinearScale, TimeScale, Tooltip, Legend);
 
 const HistoricCloseApproaches = () => {
@@ -22,7 +22,7 @@ const HistoricCloseApproaches = () => {
     const [asteroid, setAsteroid] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [timeRange, setTimeRange] = useState('5years'); // Default to Last 5 Years
+    const [timeRange, setTimeRange] = useState('5years'); 
 
     const { getCache, setCache, isCacheValid } = useCache();
 
@@ -46,7 +46,7 @@ const HistoricCloseApproaches = () => {
         setError(null);
 
         try {
-            const response = await axios.get(`http://localhost:4000/api/neo/lookup/${asteroidId}`);
+            const response = await axios.get(`${BASE_BE_API_URL}/neo/lookup/${asteroidId}`);
             const data = response.data;
             if (data && data.id) {
                 setCache(cacheKey, data, 600000);
@@ -69,7 +69,6 @@ const HistoricCloseApproaches = () => {
         }
     }, [asteroidId]);
 
-    // Define time range filter based on selected tab
     const getTimeFilter = (approach) => {
         const approachDate = dayjs(approach.close_approach_date_full);
         const currentDate = dayjs();
@@ -81,7 +80,7 @@ const HistoricCloseApproaches = () => {
             case '50years':
                 return approachDate.isAfter(currentDate.subtract(50, 'year')) && approachDate.isBefore(currentDate);
             case 'all':
-                return approachDate.isBefore(currentDate); // No lower bound for All Time
+                return approachDate.isBefore(currentDate); 
             default:
                 return false;
         }

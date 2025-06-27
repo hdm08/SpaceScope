@@ -8,12 +8,12 @@ import {
   Legend
 } from 'chart.js';
 import { Bubble } from 'react-chartjs-2';
-import 'chart.js/auto'; // Ensures all required chart types are registered
+import 'chart.js/auto'; 
 import DateForm from '../../components/DateForm';
 import dayjs from 'dayjs';
-import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
+import { useCache } from '../../components/CacheProvider'; 
+import {BASE_BE_API_URL} from '../../components/api'
 
-// Register chart components
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
 const today = new Date().toISOString().slice(0, 10);
@@ -28,7 +28,7 @@ const SizeVsDistancePlot = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { getCache, setCache, isCacheValid } = useCache(); // Access cache functions
+  const { getCache, setCache, isCacheValid } = useCache(); 
 
   const fetchAsteroids = async () => {
     setLoading(true);
@@ -48,7 +48,7 @@ const SizeVsDistancePlot = () => {
       return;
     }
 
-    const cacheKey = `asteroids_size_distance_${startDate}_${endDate}`; // Unique cache key
+    const cacheKey = `asteroids_size_distance_${startDate}_${endDate}`; 
     const cachedData = getCache(cacheKey);
 
     // Validate cached data
@@ -72,11 +72,10 @@ const SizeVsDistancePlot = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:4000/api/neo/feed?start_date=${startDate}&end_date=${endDate}`);
+      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed?start_date=${startDate}&end_date=${endDate}`);
       const data = response.data;
-      // Validate API response
       if (data && data.near_earth_objects) {
-        setCache(cacheKey, data, 300000); // 5-minute TTL
+        setCache(cacheKey, data, 300000); 
         const asteroidList = Object.keys(data.near_earth_objects).flatMap(date =>
           data.near_earth_objects[date].map(asteroid => ({
             id: asteroid.id,
@@ -96,7 +95,7 @@ const SizeVsDistancePlot = () => {
         setError('Invalid data format received from API.');
       }
     } catch (err) {
-      setAsteroids([]); // Fallback to empty array on error
+      setAsteroids([]); 
       setError('Failed to fetch asteroid data');
     } finally {
       setLoading(false);
@@ -105,8 +104,7 @@ const SizeVsDistancePlot = () => {
 
   useEffect(() => {
     fetchAsteroids();
-  }, [startDate, endDate]); // Trigger fetch when dates change
-
+  }, [startDate, endDate]); 
   const chartData = {
     datasets: [
       {
@@ -114,7 +112,7 @@ const SizeVsDistancePlot = () => {
         data: asteroids.map(asteroid => ({
           x: asteroid.missDistance,
           y: asteroid.diameter,
-          r: asteroid.velocity ? asteroid.velocity / 2 : 5, // Fallback radius if velocity is undefined
+          r: asteroid.velocity ? asteroid.velocity / 2 : 5, 
           asteroid,
         })),
         backgroundColor: asteroids.map(asteroid =>

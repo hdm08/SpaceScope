@@ -9,6 +9,7 @@ import { useCache } from '../components/CacheProvider';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../context/firebase';
+import {BASE_BE_API_URL} from "../components/api"
 
 const HomePage = () => {
   const [apod, setApod] = useState(null);
@@ -53,7 +54,7 @@ const HomePage = () => {
 
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:4000/api/apod');
+        const response = await axios.get(`${BASE_BE_API_URL}/apod`);
         const data = response.data;
         setApod(data);
         setCache(cacheKey, data);

@@ -1,13 +1,10 @@
-// src/firebase.js (or firebase.jsx)
-
-// Import the functions you need from the Firebase SDKs
-import { getAuth, GoogleAuthProvider } from "firebase/auth"; // For Authentication
-import { getFirestore } from "firebase/firestore";         // For Firestore Database
-import { getStorage } from "firebase/storage";             // For Cloud Storage
+import { getAuth, GoogleAuthProvider } from "firebase/auth"; 
+import { getFirestore } from "firebase/firestore";        
+import { getStorage } from "firebase/storage";           
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Replace the following with your app's Firebase project configuration
-// For Firebase JavaScript SDK v7.20.0 and later, measurementId is optional
+
+
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -19,16 +16,12 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
-const auth = getAuth(app);         // Get the Auth service instance
-const db = getFirestore(app);      // Get the Firestore service instance
-const storage = getStorage(app);   // Get the Cloud Storage service instance
+const auth = getAuth(app);         
+const db = getFirestore(app);      
+const storage = getStorage(app);   
 
-// Initialize Auth Providers (e.g., for Google Sign-In)
-const googleProvider = new GoogleAuthProvider(); // For Google Sign-In popups
+const googleProvider = new GoogleAuthProvider(); 
 
-// Export the initialized services and providers for use throughout your app
 export { app, auth, db, storage, googleProvider };
