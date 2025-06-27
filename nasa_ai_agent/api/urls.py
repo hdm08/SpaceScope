@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import query_nasa
 
 urlpatterns = [
-    path('query', views.query_nasa, name='query_nasa'),
+    path('query', query_nasa, name='query_nasa'),
 ]

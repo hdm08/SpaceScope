@@ -45,7 +45,7 @@ def query_nasa(request):
             return JsonResponse({'response': f'Error: {error_message}'}, status=agent_response.status_code)
         
         # Success case: agent_response is a dictionary
-        print(f"openAIAgent success: query_id={agent_response['query_id']}, thread_id={agent_response['thread_id']}")
+        print(f"openAIAgent success: response: {agent_response['response']} query_id={agent_response['query_id']}, thread_id={agent_response['thread_id']}")
         response_data = {
             'response': agent_response['response'],
             'query_id': agent_response['query_id'],

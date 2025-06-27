@@ -4,9 +4,7 @@ from rest_framework import status
 import openai
 import uuid
 import time
-from .Agent_Function.get_apod import get_apod
-from .Agent_Function.get_wikipedia_data import get_wikipedia_data
-from .utils.tools import function_tools
+from .Agent_Function.Wikipedia.get_wikipedia_data import get_wikipedia_data
 from .utils.client import Client
 from .utils.check_function_call import check_function_call
 from .utils.Assistant import Assistant

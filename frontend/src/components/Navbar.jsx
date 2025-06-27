@@ -53,7 +53,7 @@ const Navbar = () => {
             <Link to="/neo" className="hover:underline">Neo</Link>
           </li>
           <li>
-            <Link to="/NasaAgent" className="hover:underline">NasaAgent</Link>
+            <Link to="/NasaAgent" className="hover:underline">SKAI</Link>
           </li>
         </ul>
       </div>

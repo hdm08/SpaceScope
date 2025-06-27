@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import Message from './Message';
 
 function Chat() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      text: "Hello!!! I am SKAI, a space knowledge AI, the NASA assistant. How may I help you today?",
+      sender: "bot",
+    }
+  ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -39,7 +44,7 @@ function Chat() {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-indigo rounded-lg shadow-lg p-4 flex flex-col h-[80vh]">
+    <div className="w-full max-w-2xl bg-transparent rounded-lg shadow-lg p-4 flex flex-col h-[80vh]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, index) => (
           <Message key={index} text={msg.text} sender={msg.sender} />
