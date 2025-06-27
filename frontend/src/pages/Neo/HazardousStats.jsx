@@ -9,7 +9,7 @@ import {
 } from 'chart.js';
 import DateForm from '../../components/DateForm';
 import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
-import {BASE_BE_API_URL} from "../../components/api"
+import {VITE_BASE_BE_API_URL} from "../../components/api"
 // Register necessary components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -55,7 +55,7 @@ const HazardousStats = () => {
     setError(null);
 
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed`, {
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/neo/feed`, {
         params: {
           SD: startDate,
           ED: endDate,

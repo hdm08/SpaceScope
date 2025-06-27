@@ -13,7 +13,7 @@ import 'chartjs-adapter-date-fns';
 import { Chart } from 'react-chartjs-2';
 import DateForm from '../../components/DateForm';
 import { useCache } from '../../components/CacheProvider'; 
-import {BASE_BE_API_URL} from "../../components/api"
+import {VITE_BASE_BE_API_URL} from "../../components/api"
 
 ChartJS.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -73,7 +73,7 @@ const CloseApproachTimeline = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_BE_API_URL}/neo/feed/`, {
+      const response = await axios.get(`${VITE_BASE_BE_API_URL}/neo/feed/`, {
         params: { SD: startDate, ED: endDate }
       });
       const data = response.data;
