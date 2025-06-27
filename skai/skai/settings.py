@@ -37,7 +37,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1','spacescope-skai.onrender.com']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://spacescope.onrender.com"
+    "https://spacescope.onrender.com"
 ]
 # Application definition
 
