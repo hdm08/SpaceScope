@@ -7,7 +7,7 @@ const Search = async (req, res) => {
     // Construct NASA API URL with query parameters
     const baseUrl = 'https://images-api.nasa.gov/search';
     const params = {
-      q: q || 'nasa', // Changed default to 'nasa' for broader results
+      q: q || 'nasa', 
       media_type: media_type || undefined,
       year_start: year_start || 1960,
       year_end: year_end || new Date().getFullYear(),
@@ -16,12 +16,12 @@ const Search = async (req, res) => {
 
     // Fetch multiple pages
     let allItems = [];
-    const maxItems = 500;
+    const maxItems = 100;
     let currentPage = parseInt(page, 10) || 1;
     let hasMore = true;
 
     while (hasMore && allItems.length < maxItems) {
-      console.log(`Fetching page ${currentPage} with params:`, params); // Debug log
+      console.log(`Fetching page ${currentPage} with params:`, params); 
       const response = await axios.get(baseUrl, {
         params: { ...params, page: currentPage },
       });
