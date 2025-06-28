@@ -8,8 +8,9 @@ import {
   Legend,
 } from 'chart.js';
 import DateForm from '../../components/DateForm';
-import { useCache } from '../../components/CacheProvider'; // Import the useCache hook
-import {VITE_BASE_BE_API_URL} from "../../components/api"
+import { useCache } from '../../components/CacheProvider';
+import { VITE_BASE_BE_API_URL } from "../../components/api"
+
 // Register necessary components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -25,10 +26,9 @@ const HazardousStats = () => {
   const [startDate, setStartDate] = useState(sevenDaysAgo);
   const [endDate, setEndDate] = useState(today);
 
-  const { getCache, setCache, isCacheValid } = useCache(); // Access cache functions
+  const { getCache, setCache, isCacheValid } = useCache();
 
   const fetchAsteroids = async () => {
-    // Validation: startDate and endDate should exist and startDate <= endDate
     if (!startDate || !endDate) {
       setError('Please select both start and end dates.');
       setLoading(false);
@@ -40,10 +40,9 @@ const HazardousStats = () => {
       return;
     }
 
-    const cacheKey = `asteroids_stats_${startDate}_${endDate}`; // Unique cache key
+    const cacheKey = `asteroids_stats_${startDate}_${endDate}`;
     const cachedData = getCache(cacheKey);
 
-    // Validate cached data
     if (isCacheValid(cacheKey) && cachedData && cachedData.near_earth_objects) {
       const nearEarthObjects = Object.values(cachedData.near_earth_objects).flat();
       setAsteroids(nearEarthObjects);
@@ -62,9 +61,8 @@ const HazardousStats = () => {
         },
       });
       const data = response.data;
-      // Validate API response
       if (data && data.near_earth_objects) {
-        setCache(cacheKey, data, 300000); // 5-minute TTL
+        setCache(cacheKey, data, 300000);
         const nearEarthObjects = Object.values(data.near_earth_objects).flat();
         setAsteroids(nearEarthObjects);
       } else {
@@ -72,14 +70,13 @@ const HazardousStats = () => {
         setError('Invalid data format received from API.');
       }
     } catch (err) {
-      setAsteroids([]); // Fallback to empty array on error
+      setAsteroids([]);
       setError(`Failed to fetch asteroid data: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Trigger fetch when dates change
   useEffect(() => {
     if (startDate && endDate) {
       fetchAsteroids();
@@ -100,8 +97,9 @@ const HazardousStats = () => {
   };
 
   const chartOptions = {
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top', labels: { color: 'white' } }, 
+      legend: { position: 'top', labels: { color: 'white' } },
     },
   };
 
@@ -120,7 +118,7 @@ const HazardousStats = () => {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : asteroids.length > 0 ? (
-        <div className="mt-6">
+        <div className="mt-6 w-full max-w-[500px] mx-auto h-[300px] sm:h-[400px]">
           <Chart type="pie" data={chartData} options={chartOptions} />
         </div>
       ) : (
