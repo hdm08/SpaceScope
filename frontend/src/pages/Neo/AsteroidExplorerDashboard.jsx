@@ -118,7 +118,7 @@ const AsteroidExplorerDashboard = () => {
             .map((asteroid) => (
               <div
                 key={asteroid.id}
-                className="border p-4 rounded-md cursor-pointer hover:bg-gray-100 transition"
+                className="border p-4 rounded-md cursor-pointer hover:bg-white hover:bg-opacity-70 hover:text-black transition"
                 onClick={() => fetchAsteroidDetails(asteroid.id)}
               >
                 <h3 className="text-lg font-semibold">{asteroid.name}</h3>
