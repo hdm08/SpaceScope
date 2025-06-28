@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../context/firebase';
-import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const today = new Date();
@@ -11,8 +10,9 @@ const Navbar = () => {
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNeoDropdownOpen, setIsNeoDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const neoDropdownRef = useRef(null);
 
   const neoViews = [
     { id: 'timeline', label: 'Asteroid Timeline', path: '/neo/timeline' },
@@ -23,15 +23,12 @@ const Navbar = () => {
     { id: 'dashboard', label: 'Asteroid Explorer', path: '/neo/dashboard' },
   ];
 
-  const toggleMenu = () => {
-    console.log('Toggling Menu, Current State:', isMenuOpen);
-    setIsMenuOpen(!isMenuOpen);
-    setIsNeoDropdownOpen(false);
+  const toggleNeoDropdown = () => {
+    setIsNeoDropdownOpen(!isNeoDropdownOpen);
   };
 
-  const toggleNeoDropdown = () => {
-    console.log('Toggling Neo Dropdown, Current State:', isNeoDropdownOpen);
-    setIsNeoDropdownOpen(!isNeoDropdownOpen);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const handleLogout = async (e) => {
@@ -44,27 +41,29 @@ const Navbar = () => {
     }
   };
 
-  const linkClass = ({ isActive }) =>
-    isActive
-      ? 'bg-white text-black px-2 py-1 rounded'
-      : 'text-white hover:bg-gray-700 hover:text-white px-2 rounded';
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (neoDropdownRef.current && !neoDropdownRef.current.contains(event.target)) {
+        setIsNeoDropdownOpen(false);
+      }
+    };
 
-  const neoLinkClass = ({ isActive }) =>
-    isActive
-      ? 'bg-indigo-800 text-white px-3 py-2 rounded-md'
-      : 'text-white hover:bg-indigo-500 px-3 py-2 rounded-md';
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
-    <nav className="bg-black bg-opacity-50 text-white p-4 flex items-center justify-between relative">
-      <div className="flex items-center space-x-4">
-        <NavLink to="/" end>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg"
-            alt="NASA Logo"
-            className="h-12 w-12"
-          />
+    <nav className="bg-black text-white px-4 py-4 md:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <NavLink to="/" className="text-xl font-bold text-white no-underline">
+          NASA
         </NavLink>
 
+        {/* Hamburger Button */}
         <button
           className="md:hidden text-white focus:outline-none"
           onClick={toggleMenu}
@@ -82,153 +81,149 @@ const Navbar = () => {
               strokeLinejoin="round"
               strokeWidth="2"
               d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-            />
+            ></path>
           </svg>
         </button>
 
-        <ul
-          className={`${
-            isMenuOpen ? 'flex' : 'hidden'
-          } md:flex flex-col md:flex-row absolute md:static top-16 left-0 w-full md:w-auto bg-black bg-opacity-80 md:bg-transparent p-4 md:p-0 space-y-2 md:space-y-0 md:space-x-4 z-20`}
-        >
-          <li>
-            <NavLink
-              to="/"
-              end
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to={`/archive/${year}/${month}`}
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              Archive
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/favorites"
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              Favorites
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/mars_weather"
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              Mars
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/search"
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              Search
-            </NavLink>
-          </li>
-          <li className="relative">
-            <button
-              className={linkClass({ isActive: isNeoDropdownOpen || neoViews.some(view => window.location.pathname === view.path) })}
-              onClick={toggleNeoDropdown}
-              aria-haspopup="true"
-              aria-expanded={isNeoDropdownOpen}
-            >
-              Neo
-            </button>
-            {isNeoDropdownOpen && (
-              <ul className="absolute top-full left-0 mt-2 w-full sm:w-48 md:w-64 bg-black bg-opacity-90 text-white rounded-md shadow-lg z-50 max-h-60 overflow-y-auto py-2 space-y-1">
-                {neoViews.map((view) => (
-                  <li key={view.id}>
-                    <NavLink
-                      to={view.path}
-                      className={neoLinkClass}
-                      onClick={() => {
-                        console.log(`Navigating to: ${view.path}`);
-                        setIsNeoDropdownOpen(false);
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      {view.label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
+        {/* Navigation Links */}
+        <div className={`${isMenuOpen ? 'block' : 'hidden'} md:flex md:items-center md:gap-4 absolute md:static top-16 left-0 w-full md:w-auto bg-black md:bg-transparent z-50`}>
+          <ul className="flex flex-col md:flex-row gap-2 md:gap-4 p-4 md:p-0">
+            <li>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                Home
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to={`/archive/${year}/${month}`}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                Archive
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/favorites"
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                Favorites
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/mars_weather"
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                Mars Weather
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/search"
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                Search
+              </NavLink>
+            </li>
+            <li className="relative" ref={neoDropdownRef}>
+              <button
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                  isNeoDropdownOpen || neoViews.some(view => window.location.pathname === view.path)
+                    ? 'bg-white text-black'
+                    : 'text-white hover:bg-gray-700'
+                }`}
+                onClick={toggleNeoDropdown}
+                aria-haspopup="true"
+                aria-expanded={isNeoDropdownOpen}
+              >
+                Neo
+              </button>
+              {isNeoDropdownOpen && (
+                <ul className="md:absolute md:top-full md:left-0 mt-2 w-full md:w-64 bg-black bg-opacity-90 rounded-md shadow-lg z-50 max-h-80 overflow-y-auto py-2 space-y-1">
+                  {neoViews.map((view) => (
+                    <li key={view.id}>
+                      <NavLink
+                        to={view.path}
+                        className={({ isActive }) =>
+                          `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                            isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                          }`
+                        }
+                        onClick={() => {
+                          setIsNeoDropdownOpen(false);
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        {view.label}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+            <li>
+              <NavLink
+                to="/NasaAgent"
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium transition-all duration-150 ${
+                    isActive ? 'bg-white text-black' : 'text-white hover:bg-gray-700'
+                  }`
+                }
+              >
+                SKAI
+              </NavLink>
+            </li>
+          </ul>
+
+          {/* Auth Buttons */}
+          <div className="flex flex-col md:flex-row items-center gap-2 p-4 md:p-0">
+            {!user ? (
+              <>
+                <Link to="/login">
+                  <button className="w-full md:w-auto px-3 py-2 text-sm border border-white rounded-md text-white hover:bg-white hover:text-black transition-all duration-150">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/signup">
+                  <button className="w-full md:w-auto px-3 py-2 text-sm border border-white rounded-md text-white hover:bg-white hover:text-black transition-all duration-150">
+                    SignUp
+                  </button>
+                </Link>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="w-full md:w-auto px-3 py-2 text-sm border border-white rounded-md text-white hover:bg-white hover:text-black transition-all duration-150"
+              >
+                Logout
+              </button>
             )}
-          </li>
-          <li>
-            <NavLink
-              to="/NasaAgent"
-              className={linkClass}
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsNeoDropdownOpen(false);
-              }}
-            >
-              SKAI
-            </NavLink>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
-
-      <div className="flex items-center space-x-2">
-        {!user ? (
-          <>
-            <Link to="/login">
-              <button className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition">
-                Login
-              </button>
-            </Link>
-            <Link to="/signup">
-              <button className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition">
-                Sign Up
-              </button>
-            </Link>
-          </>
-        ) : (
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1 text-sm border border-white rounded hover:bg-white hover:text-black transition"
-          >
-            Logout
-          </button>
-        )}
-      </div>
-
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
-          onClick={() => {
-            setIsMenuOpen(false);
-            setIsNeoDropdownOpen(false);
-          }}
-        ></div>
-      )}
     </nav>
   );
 };
