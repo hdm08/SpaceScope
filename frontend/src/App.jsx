@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import ArchivePage from './pages/ArchivePage';
@@ -6,11 +6,16 @@ import FavoritesPage from './pages/FavoritesPage';
 import Navbar from './components/Navbar';
 import WeatherDashboard from './pages/WeatherDashboard';
 import Search from './pages/Search';
-import NeoApp from './pages/Neo/Neo';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import PrivateRoute from './components/PrivateRoute';
 import NasaAgent from './pages/Agent/NasaAgent';
+import CloseApproachTimeline from './pages/Neo/CloseApproachTimeline';
+import HazardousAsteroidsMap from './pages/Neo/HazardousAsteroidsMap';
+import HistoricCloseApproaches from './pages/Neo/HistoricCloseApproaches';
+import HazardousStats from './pages/Neo/HazardousStats';
+import SizeVsDistancePlot from './pages/Neo/SizeVsDistancePlot';
+import AsteroidExplorerDashboard from './pages/Neo/AsteroidExplorerDashboard';
 const App = () => {  
   return (
     <div className="min-h-screen bg-transparent text-white" >
@@ -34,12 +39,18 @@ const App = () => {
         </PrivateRoute>
         } />
 
+
         <Route path="/mars_weather" element={<WeatherDashboard />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/neo" element={<NeoApp />} />
-        <Route path="/login" element={<Login/>} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/NasaAgent" element={<NasaAgent />} />
+        <Route path="/neo/timeline" element={<CloseApproachTimeline />} />
+        <Route path="/neo/map" element={<HazardousAsteroidsMap />} />
+        <Route path="/neo/scatter" element={<SizeVsDistancePlot />} />
+        <Route path="/neo/stats" element={<HazardousStats />} />
+        <Route path="/neo/historic" element={<HistoricCloseApproaches />} />
+        <Route path="/neo/dashboard" element={<AsteroidExplorerDashboard />} />
 
       </Routes>
     </div>
