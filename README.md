@@ -26,7 +26,7 @@ Docker Setup
 
 8. Usage
 
-Contributing
+9. Contributing
 
 
 # Features
@@ -187,6 +187,6 @@ SKAI: Ask questions about NASA data (APOD, NEO, DONKI, Tech Transfer) via the AI
 
 The application is fully responsive and optimized for various screen sizes. It includes user interactivity features like date filters, favorite filters, and search functionality.
 
-Contributing
+# Contributing
 
 Contributions are welcome! Please fork the repository, create a new branch, and submit a pull request.
