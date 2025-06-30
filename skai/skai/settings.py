@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from dotenv import load_dotenv
 import os
-from pathlib import Path  # ✅ Add this
+from pathlib import Path  
 
 # Load .env file
-env_path = Path(__file__).resolve().parent.parent / '.env'  # Adjusted to reach root from settings.py
+env_path = Path(__file__).resolve().parent.parent / '.env'  
 load_dotenv(dotenv_path=env_path)
 
 # Access the API key
@@ -37,6 +37,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.getenv('ALLOWED_HOSTS')]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
+    "http://localhost:5173",
+
     os.getenv('CORS_ALLOWED_ORIGINS')
     ]
 # Application definition

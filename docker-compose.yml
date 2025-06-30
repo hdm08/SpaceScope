@@ -9,6 +9,8 @@ services:
       - ./backend:/app
     environment:
       - NODE_ENV=development
+      - NASA_API_KEY=your_nasa_api
+      - PORT=4000
 
   frontend:
     build:
@@ -20,16 +22,30 @@ services:
       - backend
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - /app/frontend/node_modules
     environment:
       - NODE_ENV=development
+      - NASA_API_KEY=your_nasa_api
+      - VITE_FIREBASE_API_KEY=your_firebase_api
+      - VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+      - VITE_FIREBASE_PROJECT_ID=your_firebase_poroject_id
+      - VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_message_sender_id
+      - VITE_FIREBASE_APP_ID=your_firebase_app_id
+      - VITE_FIREBASE_MEASUREMENT_ID=your_firebase_measurement_id
+
+      - VITE_BASE_BE_API_URL=https://localhost:4000/api
+      - VITE_BASE_SKAI_API_URL=https://localhost:8000/api
 
   skai:
     build:
       context: ./skai
       dockerfile: Dockerfile
     environment:
-      - OPENAI_API_KEY=abcdxyz
+      - OPENAI_API_KEY=your_openai_api
+      - NASA_API_KEY=your_nasa_api
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173
+
     ports:
       - "8000:8000"
     depends_on:
