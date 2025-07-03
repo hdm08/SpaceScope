@@ -1,6 +1,6 @@
 # SpaceScope: NASA Data Explorer
 
-SpaceScope is a web application that leverages NASA's Open APIs to provide an interactive and visually appealing platform for exploring space-related data. The application features a React frontend, a Node.js/Express backend, and a Django Python backend for the SKAI NASA AI agent. It includes functionalities like Astronomy Picture of the Day (APOD), media search, Near Earth Object (NEO) data visualizations, Mars weather dashboard, and an AI-powered query system.
+SpaceScope is a web application that leverages NASA's APIs to provide an interactive and visually appealing platform for exploring space-related data. The application features a React frontend, a Node.js/Express backend, and a Django Python backend for the SKAI NASA AI agent. It includes functionalities like Astronomy Picture of the Day (APOD), media search, Near Earth Object (NEO) data visualizations, Mars weather dashboard, and an AI-powered query system.
 
 # Table of Contents
 
